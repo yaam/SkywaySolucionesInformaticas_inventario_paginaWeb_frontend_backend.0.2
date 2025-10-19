@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongodb+srv://yeisonandresangulomoreno1_db_user:<SbOE4PVV9GVs3B4e>@cluster0.2brq7mt.mongodb.net/');
 
 const getConnection = async () =>{
     try {
