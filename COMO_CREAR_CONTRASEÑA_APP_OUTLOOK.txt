@@ -86,7 +86,7 @@ OPCIÓN 2: Ruta Manual Completa
 ───────────────────────────────────────────────────────────────────
 
 PORT=4001
-MONGO_URI=mongodb+srv://faludni_db_user:MczT7pU2B4sJzLDc@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+MONGO_URI=mongodb+srv://user_db_user:CONTRASEÑA_APP_OUTLOOK@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
 EMAIL_USER=yaam17@outlook.com
 EMAIL_PASS=abcdefghijklmnop
 
