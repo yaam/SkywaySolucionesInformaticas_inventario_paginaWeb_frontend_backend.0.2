@@ -1,9 +1,12 @@
 const { Router } = require('express');
-const { crearVisitaTecnica, listarVisitasTecnicas } = require('../controllers/visitaTecnica');
+const { crearVisitaTecnica, listarVisitasTecnicas, completarVisitaTecnica, verificarToken, transferirAInventario } = require('../controllers/visitaTecnica');
 
 const router = Router();
 
 router.post('/', crearVisitaTecnica);
-router.get('/', listarVisitasTecnicas); // Opcional: para que puedas ver las visitas agendadas desde un panel de administración
+router.get('/', listarVisitasTecnicas);
+router.put('/completar/:visitaId', completarVisitaTecnica);
+router.post('/verificar-token/:visitaId', verificarToken);
+router.post('/transferir/:visitaId', transferirAInventario);
 
 module.exports = router;

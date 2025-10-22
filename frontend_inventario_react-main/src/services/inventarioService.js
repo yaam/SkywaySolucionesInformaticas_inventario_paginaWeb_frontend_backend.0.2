@@ -1,7 +1,7 @@
 import {axiosInstance} from '../helpers/axios-config';
 
 const getInventarios = () =>{
-    return axiosInstance.get('inventario', {
+    return axiosInstance.get('/api/inventarios', {
         headers : {
             'Content-type': 'application/json'
         }
@@ -9,7 +9,7 @@ const getInventarios = () =>{
 }
 
 const crearInventario = (data) =>{
-    return axiosInstance.post('inventario', data, {
+    return axiosInstance.post('/api/inventarios', data, {
         headers : {
             'Content-type': 'application/json'
         }
@@ -17,7 +17,7 @@ const crearInventario = (data) =>{
 }
 
 const editInventario = (inventarioId,data) =>{
-    return axiosInstance.put(`inventario/${inventarioId}`, data, {
+    return axiosInstance.put(`/api/inventarios/${inventarioId}`, data, {
         headers : {
             'Content-type': 'application/json'
         }
@@ -25,7 +25,15 @@ const editInventario = (inventarioId,data) =>{
 }
 
 const getInventarioPorId = (inventarioId) =>{
-    return axiosInstance.get(`inventario/${inventarioId}`, {
+    return axiosInstance.get(`/api/inventarios/${inventarioId}`, {
+        headers : {
+            'Content-type': 'application/json'
+        }
+    });
+}
+
+const eliminarInventario = (inventarioId) =>{
+    return axiosInstance.delete(`/api/inventarios/${inventarioId}`, {
         headers : {
             'Content-type': 'application/json'
         }
@@ -33,5 +41,5 @@ const getInventarioPorId = (inventarioId) =>{
 }
 
 export{
-    getInventarios, crearInventario, editInventario,getInventarioPorId
+    getInventarios, crearInventario, editInventario, getInventarioPorId, eliminarInventario
 }

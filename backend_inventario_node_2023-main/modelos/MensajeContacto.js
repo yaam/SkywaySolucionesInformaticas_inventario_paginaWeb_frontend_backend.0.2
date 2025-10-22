@@ -4,7 +4,8 @@ const MensajeContactoSchema = Schema({
     nombre: { type: String, required: true },
     email: { type: String, required: true },
     telefono: { type: String },
-    tipoEquipo: { type: String, required: true },
+    lineaLlamada: { type: String },
+    whatsapp: { type: String },
     mensaje: { type: String, required: true },
     fechaCreacion: { type: Date, default: new Date() }
 });

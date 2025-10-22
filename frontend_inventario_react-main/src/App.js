@@ -10,13 +10,17 @@ import { InventarioUpdate } from './components/inventarios/InventarioUpdate';
 import { AgendarVisita } from './components/AgendarVisita';
 import { Contacto } from './components/Contacto';
 import { Servicios } from './components/Servicios';
+import { Activos } from './components/Activos';
+import { GestionVisitas } from './components/GestionVisitas';
 
 
 const App = () => {
     return <Router>
         <Header/>
         <Switch>
-            <Route exact path='/' component= {InventarioView} />
+            <Route exact path='/' component= {Activos} />
+            <Route exact path='/activos' component= {Activos} />
+            <Route exact path='/inventarios' component= {InventarioView} />
             <Route exact path='/usuarios' component= {UsuarioView} />
             <Route exact path='/marcas' component= {MarcaView} />
             <Route exact path='/estados' component= {EstadoView} />
@@ -25,7 +29,8 @@ const App = () => {
             <Route exact path='/agendar-visita' component={AgendarVisita} />
             <Route exact path='/contacto' component={Contacto} />
             <Route exact path='/servicios' component={Servicios} />
-            <Redirect to='/' />
+            <Route exact path='/gestion-visitas' component={GestionVisitas} />
+            <Redirect to='/activos' />
         </Switch>
 
     </Router>

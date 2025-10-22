@@ -25,6 +25,10 @@ const InventarioSchema = Schema ({
         type: String,
         required: true,
     },
+    fotoInicial:{
+        type: String,
+        required: false,
+    },
     precio: {
         type: Number,
         required: true,
@@ -67,7 +71,9 @@ const InventarioSchema = Schema ({
     fechaMantenimientoProgramado: { type: Date }, // Para mantenimiento preventivo
     detallesMantenimiento: { type: String }, // Detalles de mantenimiento realizado
     tecnologiaWeb: { type: String }, // Para proyectos web (ej: React, Node.js, MongoDB)
-    urlProyecto: { type: String } // URL del proyecto web si aplica
+    urlProyecto: { type: String }, // URL del proyecto web si aplica
+    activo: { type: Boolean, default: true }, // Indica si el equipo está activo o inactivo
+    seguimiento: { type: String, default: '' } // Seguimiento detallado del estado del equipo
 });
  
 module.exports = model('Inventario', InventarioSchema);

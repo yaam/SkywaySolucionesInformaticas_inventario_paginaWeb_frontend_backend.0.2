@@ -1,9 +1,9 @@
 {
-  "name": "app-nodejs",
+  "name": "Inventario-backend-Skyway-NodeJs",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "star": "node index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yeison Andres Angulo Moreno",
@@ -13,9 +13,11 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-validator": "^6.14.0",
-    "mongoose": "^6.3.3"
+    "mongodb": "^2.2.12",
+    "mongoose": "^6.3.3",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.9"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yaam/app-nodejs.git"

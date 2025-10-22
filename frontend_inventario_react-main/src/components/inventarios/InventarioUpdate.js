@@ -20,7 +20,7 @@ export const InventarioUpdate = () => {
     const {serial = '', modelo= '', descripcion= '', color= '', foto = '',
     fechaCompra = '', precio= '', usuario, marca, tipo, estado,
     tipoInventario = '', clienteAsociado = '', fechaMantenimientoProgramado = '',
-    detallesMantenimiento = '', tecnologiaWeb = '', urlProyecto = ''} = valoresForm;
+    detallesMantenimiento = '', tecnologiaWeb = '', urlProyecto = '', activo = true, seguimiento = ''} = valoresForm;
 
 
     const listarUsuarios = async () =>{
@@ -104,22 +104,26 @@ export const InventarioUpdate = () => {
             foto: inventario.foto,
             fechaCompra: inventario.fechaCompra,
             precio: inventario.precio,
-            usuario: inventario.usuario?._id, // Usar optional chaining
-            marca: inventario.marca?._id, // Usar optional chaining
-            tipo: inventario.tipoEquipo?._id, // Usar optional chaining
-            estado: inventario.estadoEquipo?._id, // Usar optional chaining
+            usuario: inventario.usuario && inventario.usuario._id,
+            marca: inventario.marca && inventario.marca._id,
+            tipo: inventario.tipoEquipo && inventario.tipoEquipo._id,
+            estado: inventario.estadoEquipo && inventario.estadoEquipo._id,
             tipoInventario: inventario.tipoInventario || '', // Nuevo campo
             clienteAsociado: inventario.clienteAsociado || '', // Nuevo campo
             fechaMantenimientoProgramado: inventario.fechaMantenimientoProgramado ? inventario.fechaMantenimientoProgramado.substring(0, 10) : '', // Nuevo campo
             detallesMantenimiento: inventario.detallesMantenimiento || '', // Nuevo campo
             tecnologiaWeb: inventario.tecnologiaWeb || '', // Nuevo campo
-            urlProyecto: inventario.urlProyecto || '' // Nuevo campo
+            urlProyecto: inventario.urlProyecto || '', // Nuevo campo
+            activo: inventario.activo !== undefined ? inventario.activo : true, // Campo activo/inactivo
+            seguimiento: inventario.seguimiento || '' // Campo seguimiento
         });
     }, [inventario]);
 
     const handleOnChange = ({ target}) =>{
     const{ name, value} = target
-    setValoresForm ({...valoresForm, [name]: value }); // spread
+    // Convertir el valor de "activo" de string a boolean
+    const finalValue = name === 'activo' ? value === 'true' : value;
+    setValoresForm ({...valoresForm, [name]: finalValue }); // spread
     }
     const handleOnSubmit = async (e) =>{
     e.preventDefault();
@@ -143,7 +147,9 @@ export const InventarioUpdate = () => {
         fechaMantenimientoProgramado, // Nuevo campo
         detallesMantenimiento, // Nuevo campo
         tecnologiaWeb, // Nuevo campo
-        urlProyecto // Nuevo campo
+        urlProyecto, // Nuevo campo
+        activo, // Campo activo/inactivo
+        seguimiento // Campo seguimiento
 
     }
     try {
@@ -435,6 +441,50 @@ export const InventarioUpdate = () => {
                                         </>
                                     )}
                                 </div>
+                                
+                                {/* Campo Estado Activo/Inactivo */}
+                                <div className='row mt-3'>
+                                    <div className='col-md-6'>
+                                        <div className="mb-3">
+                                            <label className="form-label">Estado del Equipo en Servicio</label>
+                                            <select 
+                                                className="form-select" 
+                                                onChange={(e) => handleOnChange(e)}
+                                                name="activo"
+                                                required
+                                                value={activo.toString()}>
+                                                <option value="true">✅ Activo (En Servicio)</option>
+                                                <option value="false">❌ Inactivo (Fuera de Servicio)</option>
+                                            </select>
+                                            <small className="text-muted">
+                                                Indica si el equipo está en uso o fuera de servicio (guardado, reemplazado, etc.)
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div className='col-md-6'>
+                                        <div className="mb-3">
+                                            <label className="form-label">Seguimiento del Equipo</label>
+                                            <textarea 
+                                                className="form-control" 
+                                                name="seguimiento"
+                                                rows="3"
+                                                value={seguimiento}
+                                                onChange={(e) => handleOnChange(e)}
+                                                placeholder={activo ? 
+                                                    "Ej: Equipo en circulación, funcionando correctamente en la oficina del gerente..." : 
+                                                    "Ej: Equipo guardado en bodega, reemplazado por modelo más nuevo..."
+                                                }
+                                            ></textarea>
+                                            <small className="text-muted">
+                                                {activo ? 
+                                                    "Describe la ubicación actual y funciones del equipo activo" : 
+                                                    "Describe el motivo del estado inactivo y ubicación del equipo guardado"
+                                                }
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div className='row'>
                                         <div className='col'>
                                             <button className="btn btn-primary">Guardar</button>

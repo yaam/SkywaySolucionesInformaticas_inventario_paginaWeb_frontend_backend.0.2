@@ -73,6 +73,8 @@ const createInventario = async (req, res) =>{
             inventario.detallesMantenimiento = req.body.detallesMantenimiento;
             inventario.tecnologiaWeb = req.body.tecnologiaWeb;
             inventario.urlProyecto = req.body.urlProyecto;
+            inventario.activo = req.body.activo !== undefined ? req.body.activo : true; // Campo activo/inactivo
+            inventario.seguimiento = req.body.seguimiento || ''; // Campo seguimiento
 
 
             inventario = await inventario.save();
@@ -129,6 +131,8 @@ const updateInventario = async (req, res)=>{
             inventario.detallesMantenimiento = req.body.detallesMantenimiento;
             inventario.tecnologiaWeb = req.body.tecnologiaWeb;
             inventario.urlProyecto = req.body.urlProyecto;
+            inventario.activo = req.body.activo !== undefined ? req.body.activo : inventario.activo; // Campo activo/inactivo
+            inventario.seguimiento = req.body.seguimiento !== undefined ? req.body.seguimiento : inventario.seguimiento; // Campo seguimiento
 
 
             inventario = await inventario.save();
@@ -153,4 +157,22 @@ const getInventarioId = async (req, res) => {
     }
 }
 
-module.exports = {getInventario, createInventario, updateInventario, getInventarioId}
+/**
+ * Eliminación
+ */
+const deleteInventario = async (req, res) => {
+    try {
+        const inventario = await Inventario.findById(req.params.inventarioId);
+        if(!inventario){
+            return res.status(404).send('Inventario no encontrado');
+        }
+        
+        await Inventario.findByIdAndDelete(req.params.inventarioId);
+        res.send('Inventario eliminado exitosamente');
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Ocurrio un error en el servidor');
+    }
+}
+
+module.exports = {getInventario, createInventario, updateInventario, getInventarioId, deleteInventario}
