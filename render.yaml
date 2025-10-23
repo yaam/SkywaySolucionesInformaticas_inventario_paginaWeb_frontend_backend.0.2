@@ -1,0 +1,28 @@
+services:
+  # Backend API (Node.js + Express)
+  - type: web
+    name: skyway-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend_inventario_node_2023-main && npm install
+    startCommand: cd backend_inventario_node_2023-main && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4001
+      - key: MONGO_URI
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+    healthCheckPath: /api/inventarios
+
+databases:
+  # MongoDB Atlas (External - No se crea en Render, se conecta a Atlas)
+  # Configura MONGO_URI en las variables de entorno de Render
+
