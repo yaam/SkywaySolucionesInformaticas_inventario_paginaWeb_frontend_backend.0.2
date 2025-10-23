@@ -52,7 +52,7 @@ Copia EXACTAMENTE estas 4 líneas en el archivo `.env`:
 
 ```
 PORT=4001
-MONGO_URI=mongodb+srv://faludni_db_user:MczT7pU2B4sJzLDc@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+MONGO_URI=mongodb+srv://User_MongoDB:Password_MongoDB@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
 EMAIL_USER=yaam17@outlook.com
 EMAIL_PASS=TU_CONTRASEÑA_DE_OUTLOOK_AQUI
 ```
@@ -85,7 +85,7 @@ El archivo debe quedar así (con tu contraseña real):
 
 ```
 PORT=4001
-MONGO_URI=mongodb+srv://faludni_db_user:MczT7pU2B4sJzLDc@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+MONGO_URI=mongodb+srv://user_db_user:Password_MongoDB@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
 EMAIL_USER=yaam17@outlook.com
 EMAIL_PASS=miContraseñaReal123
 ```

@@ -14,7 +14,7 @@ Configurar el sistema para enviar emails con tokens de confirmación a `yaam17@o
 
 ```env
 PORT=4001
-MONGO_URI=mongodb+srv://faludni_db_user:MczT7pU2B4sJzLDc@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+MONGO_URI=mongodb+srv://User_mongoDB_user:Password_MongoDB@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
 EMAIL_USER=yaam17@outlook.com
 EMAIL_PASS=tu_contraseña_de_outlook
 ```
