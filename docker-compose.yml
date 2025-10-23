@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # Backend - API Node.js
+  backend:
+    build:
+      context: ./backend_inventario_node_2023-main
+      dockerfile: Dockerfile
+    container_name: skyway-backend
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - MONGO_URI=${MONGO_URI}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+    volumes:
+      # Persistir uploads
+      - ./backend_inventario_node_2023-main/uploads:/usr/src/app/uploads
+      # Para desarrollo: sincronizar código (comentar en producción)
+      # - ./backend_inventario_node_2023-main:/usr/src/app
+      # - /usr/src/app/node_modules
+    restart: unless-stopped
+    networks:
+      - skyway-network
+    depends_on:
+      - mongodb
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend - React
+  frontend:
+    build:
+      context: ./frontend_inventario_react-main
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BASE_URL=${REACT_APP_BASE_URL:-http://localhost:4001}
+    container_name: skyway-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - skyway-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MongoDB (opcional - si deseas usar MongoDB local en lugar de Atlas)
+  mongodb:
+    image: mongo:6.0
+    container_name: skyway-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=inventarios
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    restart: unless-stopped
+    networks:
+      - skyway-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  skyway-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+
+
+

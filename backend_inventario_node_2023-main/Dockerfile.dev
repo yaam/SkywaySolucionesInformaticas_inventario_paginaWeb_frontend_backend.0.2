@@ -1,0 +1,33 @@
+# Dockerfile para desarrollo con nodemon
+FROM node:16-alpine
+
+WORKDIR /usr/src/app
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar todas las dependencias (incluyendo dev)
+RUN npm install
+
+# Instalar nodemon globalmente
+RUN npm install -g nodemon
+
+# Copiar el código fuente
+COPY . .
+
+# Crear directorio para uploads
+RUN mkdir -p uploads
+
+# Exponer puerto
+EXPOSE 4001
+
+# Variables de entorno
+ENV PORT=4001
+ENV NODE_ENV=development
+
+# Comando con nodemon para hot-reload
+CMD ["nodemon", "index.js"]
+
+
+
+

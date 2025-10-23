@@ -1,23 +1,26 @@
-#que version de node sera instalada en la imagen
-#instala node en el contenedor
-FROM node:16
+# Versión de Node.js a instalar en la imagen
+FROM node:16-alpine
 
-#crea un directorio dentro del contenedor 
-#crea una ruta de un sistema operativo linux
-#copia todo el codigo dentro todo el contenedor
-
+# Crear directorio de trabajo dentro del contenedor
 WORKDIR /usr/src/app
 
-#copia el package.json del codigo 
-
+# Copiar archivos de dependencias
 COPY package*.json ./
 
-RUN npm install
+# Instalar dependencias
+RUN npm install --production
 
-#copia todo el contenido del codigo 
+# Copiar todo el código fuente
 COPY . .
 
-#consume los contenidos del contener sobre un puerto de escucha
-#escucha toda las peticiones http
-EXPOSE 4000
-CMD [ "node", "index.js" ]
+# Crear directorio para uploads si no existe
+RUN mkdir -p uploads
+
+# Exponer el puerto de la aplicación
+EXPOSE 4001
+
+# Variables de entorno por defecto (se sobrescriben con docker-compose)
+ENV PORT=4001
+
+# Comando para ejecutar la aplicación
+CMD ["node", "index.js"]

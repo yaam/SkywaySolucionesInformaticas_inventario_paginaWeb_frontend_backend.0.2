@@ -1,0 +1,79 @@
+version: '3.8'
+
+# Configuración para DESARROLLO con hot-reload
+services:
+  # Backend - API Node.js con nodemon
+  backend:
+    build:
+      context: ./backend_inventario_node_2023-main
+      dockerfile: Dockerfile.dev
+    container_name: skyway-backend-dev
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - MONGO_URI=${MONGO_URI}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - NODE_ENV=development
+    volumes:
+      # Sincronizar código para hot-reload
+      - ./backend_inventario_node_2023-main:/usr/src/app
+      - /usr/src/app/node_modules
+      - ./backend_inventario_node_2023-main/uploads:/usr/src/app/uploads
+    restart: unless-stopped
+    networks:
+      - skyway-network
+    command: npm run dev
+
+  # Frontend - React con hot-reload
+  frontend:
+    build:
+      context: ./frontend_inventario_react-main
+      dockerfile: Dockerfile.dev
+    container_name: skyway-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BASE_URL=http://localhost:4001
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      # Sincronizar código para hot-reload
+      - ./frontend_inventario_react-main:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    networks:
+      - skyway-network
+    depends_on:
+      - backend
+
+  # MongoDB (opcional - solo si no usas Atlas)
+  mongodb:
+    image: mongo:6.0
+    container_name: skyway-mongodb-dev
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=inventarios
+    volumes:
+      - mongodb_data_dev:/data/db
+    restart: unless-stopped
+    networks:
+      - skyway-network
+
+networks:
+  skyway-network:
+    driver: bridge
+
+volumes:
+  mongodb_data_dev:
+    driver: local
+
+
+
+
