@@ -9,10 +9,7 @@ const getConnection = async () =>{
             throw new Error('MONGO_URI no está configurada en las variables de entorno');
         }
         
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect(process.env.MONGO_URI);
         
         console.log('✅ Conectado exitosamente a MongoDB');
         console.log('Base de datos:', mongoose.connection.name);
