@@ -7,7 +7,9 @@ const por = process.env.PORT || 4001;
 
 // Verificar que las variables de entorno estén configuradas
 if (!process.env.MONGO_URI) {
-    console.error('❌ Error: MONGO_URI no está configurada en el archivo .env');
+    console.error('❌ Error: MONGO_URI no está configurada');
+    console.error('📝 En Render: Ve a Dashboard → Environment → Add Environment Variable');
+    console.error('📝 En local: Crea un archivo .env con MONGO_URI=tu_connection_string');
     process.exit(1);
 }
 
