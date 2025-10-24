@@ -145,7 +145,7 @@ export const GestionVisitas = () => {
 
             const imagenFinalBase64 = await convertirImagenABase64(imagenFinal);
 
-            const response = await axiosInstance.put(`/api/agendar-visita/completar/${visitaSeleccionada._id}`, {
+            await axiosInstance.put(`/api/agendar-visita/completar/${visitaSeleccionada._id}`, {
                 imagenFinal: imagenFinalBase64,
                 observacionesTecnico: observaciones,
                 usuario: datosAsociacion.usuario,

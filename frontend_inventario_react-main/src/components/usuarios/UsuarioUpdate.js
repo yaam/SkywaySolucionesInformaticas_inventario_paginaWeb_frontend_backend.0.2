@@ -22,6 +22,7 @@ export const UsuarioUpdate = () => {
     
     useEffect( ()=>{
         listarUsuarios();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getUsuarios = async () =>{
@@ -42,6 +43,7 @@ export const UsuarioUpdate = () => {
 
        useEffect(()=>{
         getUsuarios();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
        }, [usuarioId]);
 
        useEffect(()=>{
