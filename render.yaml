@@ -20,7 +20,7 @@ services:
         sync: false
       - key: EMAIL_FROM
         sync: false
-    healthCheckPath: /api/inventarios
+    healthCheckPath: /health
 
 databases:
   # MongoDB Atlas (External - No se crea en Render, se conecta a Atlas)

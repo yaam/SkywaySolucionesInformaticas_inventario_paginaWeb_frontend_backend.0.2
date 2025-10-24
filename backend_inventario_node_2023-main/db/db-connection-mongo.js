@@ -2,14 +2,20 @@ const mongoose = require('mongoose');
 
 const getConnection = async () =>{
     try {
-        console.log('Inicializando llamado a bd');
-        console.log('MONGO_URI:', process.env.MONGO_URI ? 'Configurada' : 'NO CONFIGURADA');
+        console.log('🔄 Inicializando conexión a MongoDB...');
         
-        if (!process.env.MONGO_URI) {
+        // Limpiar el URI de espacios y saltos de línea
+        const mongoUri = process.env.MONGO_URI?.trim();
+        
+        if (!mongoUri) {
             throw new Error('MONGO_URI no está configurada en las variables de entorno');
         }
         
-        await mongoose.connect(process.env.MONGO_URI);
+        console.log('✅ MONGO_URI encontrada');
+        console.log('📊 Longitud del URI:', mongoUri.length, 'caracteres');
+        console.log('🔗 Formato del URI:', mongoUri.substring(0, 14) + '...' + mongoUri.substring(mongoUri.length - 20));
+        
+        await mongoose.connect(mongoUri);
         
         console.log('✅ Conectado exitosamente a MongoDB');
         console.log('Base de datos:', mongoose.connection.name);
