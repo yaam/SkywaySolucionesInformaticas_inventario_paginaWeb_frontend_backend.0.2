@@ -23,17 +23,22 @@ const crearMensajeContacto = async (req = request, res = response) => {
             mensaje
         });
 
-        await mensajeContacto.save();
+        // Intentar guardar en MongoDB (opcional si hay error de conexión)
+        try {
+            await mensajeContacto.save();
+            console.log('✅ Mensaje guardado en MongoDB');
+        } catch (dbError) {
+            console.log('⚠️ No se pudo guardar en MongoDB (continuando con envío de email):', dbError.message);
+        }
 
         // Configurar el transporter de nodemailer para Outlook
+        // NOTA: Usando servicio 'hotmail' en lugar de configuración manual
+        // para evitar problemas de firewall
         const transporter = nodemailer.createTransport({
-            service: 'hotmail', // Outlook/Hotmail
+            service: 'hotmail',
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
-            },
-            tls: {
-                rejectUnauthorized: false // Soluciona el error de certificado SSL
             }
         });
 

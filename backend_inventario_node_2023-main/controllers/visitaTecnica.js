@@ -94,16 +94,29 @@ const completarVisitaTecnica = async (req = request, res = response) => {
 
         await visitaTecnica.save();
 
-        // Configurar el transporter de nodemailer para Outlook
+        // Configurar el transporter de nodemailer para Outlook (optimizado)
         const transporter = nodemailer.createTransport({
-            service: 'hotmail', // Outlook/Hotmail
+            host: 'smtp-mail.outlook.com',
+            port: 587,
+            secure: false, // true para puerto 465, false para 587
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             },
             tls: {
-                rejectUnauthorized: false // Soluciona el error de certificado SSL
-            }
+                ciphers: 'SSLv3',
+                rejectUnauthorized: true
+            },
+            // Configuraciones de rendimiento
+            pool: true, // Usa pool de conexiones para envíos rápidos
+            maxConnections: 5,
+            maxMessages: 10,
+            rateDelta: 1000, // milisegundos
+            rateLimit: 5, // máximo 5 emails por segundo
+            // Timeouts para evitar esperas infinitas
+            connectionTimeout: 10000, // 10 segundos
+            greetingTimeout: 5000, // 5 segundos
+            socketTimeout: 15000 // 15 segundos
         });
 
         // Verificar configuración
