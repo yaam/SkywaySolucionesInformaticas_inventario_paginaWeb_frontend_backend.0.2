@@ -4,16 +4,31 @@ const getConnection = async () =>{
     try {
         console.log('🔄 Inicializando conexión a MongoDB...');
         
-        // Limpiar el URI de espacios y saltos de línea
-        const mongoUri = process.env.MONGO_URI?.trim();
+        // Obtener el URI y limpiar
+        let mongoUri = process.env.MONGO_URI;
         
         if (!mongoUri) {
             throw new Error('MONGO_URI no está configurada en las variables de entorno');
         }
         
-        console.log('✅ MONGO_URI encontrada');
-        console.log('📊 Longitud del URI:', mongoUri.length, 'caracteres');
-        console.log('🔗 Formato del URI:', mongoUri.substring(0, 14) + '...' + mongoUri.substring(mongoUri.length - 20));
+        // Limpiar espacios, saltos de línea, tabulaciones
+        mongoUri = mongoUri.trim().replace(/\s+/g, '');
+        
+        // Limpiar prefijos comunes que pueden aparecer por error en Render
+        mongoUri = mongoUri.replace(/^MONGO_URI[=:\s]*/i, '');
+        mongoUri = mongoUri.replace(/^Key:\s*MONGO_URI\s*Value:\s*/i, '');
+        mongoUri = mongoUri.replace(/^Key:\s*MONGO_URI\s*/i, '');
+        mongoUri = mongoUri.replace(/^Value:\s*/i, '');
+        
+        // Verificar que comience correctamente
+        if (!mongoUri.startsWith('mongodb://') && !mongoUri.startsWith('mongodb+srv://')) {
+            console.error('❌ URI inválido. Recibido:', mongoUri.substring(0, 50) + '...');
+            throw new Error('MONGO_URI debe comenzar con "mongodb://" o "mongodb+srv://"');
+        }
+        
+        console.log('✅ MONGO_URI limpio y válido');
+        console.log('📊 Longitud:', mongoUri.length, 'caracteres');
+        console.log('🔗 Comienza con:', mongoUri.substring(0, 20) + '...');
         
         await mongoose.connect(mongoUri);
         

@@ -8,11 +8,22 @@ const host = '0.0.0.0'; // Escuchar en todas las interfaces para Render
 
 // Limpiar y verificar MONGO_URI
 if (process.env.MONGO_URI) {
-    // Limpiar espacios y saltos de línea
-    process.env.MONGO_URI = process.env.MONGO_URI.trim();
+    // Limpiar espacios, saltos de línea y prefijos incorrectos
+    let mongoUri = process.env.MONGO_URI.trim().replace(/\s+/g, '');
+    
+    // Limpiar prefijos comunes que pueden aparecer por error
+    mongoUri = mongoUri.replace(/^MONGO_URI[=:\s]*/i, '');
+    mongoUri = mongoUri.replace(/^Key:\s*MONGO_URI\s*Value:\s*/i, '');
+    mongoUri = mongoUri.replace(/^Key:\s*MONGO_URI\s*/i, '');
+    mongoUri = mongoUri.replace(/^Value:\s*/i, '');
+    
+    // Actualizar la variable de entorno con el valor limpio
+    process.env.MONGO_URI = mongoUri;
+    
     console.log('✅ MONGO_URI configurada correctamente');
-    console.log('🔗 Longitud:', process.env.MONGO_URI.length, 'caracteres');
-    console.log('🔗 Comienza con:', process.env.MONGO_URI.substring(0, 20) + '...');
+    console.log('🔗 Longitud:', mongoUri.length, 'caracteres');
+    console.log('🔗 Comienza con:', mongoUri.substring(0, 14) + '...');
+    console.log('🔗 Termina con:', '...' + mongoUri.substring(mongoUri.length - 20));
 } else {
     console.error('❌ Error: MONGO_URI no está configurada');
     console.error('📝 En Render: Ve a Dashboard → Environment → Add Environment Variable');
