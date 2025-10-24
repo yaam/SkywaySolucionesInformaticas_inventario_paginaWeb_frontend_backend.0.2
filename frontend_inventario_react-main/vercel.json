@@ -39,8 +39,10 @@
       "dest": "/index.html"
     }
   ],
-  "env": {
-    "REACT_APP_BASE_URL": "@backend_url"
+  "build": {
+    "env": {
+      "REACT_APP_BASE_URL": "https://skywaysolucionesinformaticas-inventario.onrender.com"
+    }
   }
 }
 
