@@ -1,6 +1,8 @@
 const MensajeContacto = require('../modelos/MensajeContacto');
 const { request, response } = require('express');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
  * Handles incoming contact messages by extracting data from the request body,
@@ -34,17 +36,17 @@ const crearMensajeContacto = async (req = request, res = response) => {
         // Configurar el transporter de nodemailer para Outlook
         // NOTA: Usando servicio 'hotmail' en lugar de configuración manual
         // para evitar problemas de firewall
-        const transporter = nodemailer.createTransport({
-            service: 'hotmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        // const transporter = nodemailer.createTransport({
+        //     service: 'hotmail',
+        //     auth: {
+        //         user: process.env.EMAIL_USER,
+        //         pass: process.env.EMAIL_PASS
+        //     }
+        // });
 
         // Verificar configuración
         console.log('📧 Intentando enviar correo desde:', process.env.EMAIL_USER);
-        console.log('🔐 Contraseña configurada:', process.env.EMAIL_PASS ? '✅ Sí (oculta)' : '❌ NO CONFIGURADA');
+        // console.log('🔐 Contraseña configurada:', process.env.EMAIL_PASS ? '✅ Sí (oculta)' : '❌ NO CONFIGURADA');
 
         // Configurar el contenido del correo
         const mailOptions = {
@@ -79,8 +81,8 @@ const crearMensajeContacto = async (req = request, res = response) => {
         };
 
         // Verificar credenciales antes de enviar
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error('❌ ERROR: EMAIL_USER o EMAIL_PASS no configurados en .env');
+        if (!process.env.SENDGRID_API_KEY) {
+            console.error('❌ ERROR: SENDGRID_API_KEY no configurada en .env');
             return res.status(201).json({ 
                 mensaje: 'Mensaje guardado, pero correo no enviado (credenciales faltantes)', 
                 mensajeContacto 
@@ -89,7 +91,7 @@ const crearMensajeContacto = async (req = request, res = response) => {
 
         // Intentar enviar el correo
         try {
-            const info = await transporter.sendMail(mailOptions);
+            const info = await sgMail.send(mailOptions);
             console.log('✅ Correo de notificación enviado exitosamente a yaam17@outlook.com');
             console.log('📬 ID del mensaje:', info.messageId);
             return res.status(201).json({ 
@@ -107,7 +109,7 @@ const crearMensajeContacto = async (req = request, res = response) => {
                 console.error('📝 Respuesta del servidor:', emailError.response);
             }
             console.log('⚠️ Mensaje guardado en la base de datos, pero el correo no se pudo enviar');
-            console.log('⚠️ Verifica que EMAIL_PASS sea la contraseña de aplicación de Outlook');
+            // console.log('⚠️ Verifica que EMAIL_PASS sea la contraseña de aplicación de Outlook');
             return res.status(201).json({ 
                 mensaje: 'Mensaje de contacto recibido con éxito (correo no enviado)', 
                 mensajeContacto,
