@@ -128,7 +128,7 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         // Configurar el contenido del correo para el técnico
         const mailOptions = {
             from: process.env.EMAIL_USER || 'yaam17@outlook.com',
-            to: 'yaam17@outlook.com',
+            to: 'yeisonangulo61@gmail.com', // CAMBIA ESTA LÍNEA A TU CORREO DE PRUEBA
             subject: '🔧 Trabajo Completado - Skyway Soluciones Informáticas',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
