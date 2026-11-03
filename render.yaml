@@ -14,11 +14,13 @@ services:
         value: 4001
       - key: MONGO_URI
         sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
       - key: EMAIL_USER
         sync: false
-      - key: EMAIL_PASS
-        sync: false
       - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_TO
         sync: false
     healthCheckPath: /health
 

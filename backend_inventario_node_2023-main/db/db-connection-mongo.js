@@ -1,5 +1,33 @@
 const mongoose = require('mongoose');
 
+const ESTADOS_DB = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+const INTERVALO_LOG_ESTADO_MS = 60000;
+let ultimoErrorDb = null;
+
+const getDbStatus = () => ({
+    readyState: mongoose.connection.readyState,
+    state: ESTADOS_DB[mongoose.connection.readyState] || 'unknown',
+    name: mongoose.connection.name || null,
+    lastError: ultimoErrorDb,
+});
+
+mongoose.connection.on('connected', () => {
+    ultimoErrorDb = null;
+    console.log('✅ MongoDB: conectado');
+});
+mongoose.connection.on('disconnected', () => console.warn('⚠️ MongoDB: desconectado'));
+mongoose.connection.on('error', (error) => {
+    ultimoErrorDb = error.message;
+    console.error('❌ MongoDB: error de conexión:', error.message);
+});
+
+setInterval(() => {
+    const { state, lastError } = getDbStatus();
+    if (state !== 'connected') {
+        console.warn(`⚠️ Estado MongoDB: ${state}${lastError ? ` (último error: ${lastError})` : ''}`);
+    }
+}, INTERVALO_LOG_ESTADO_MS).unref();
+
 const getConnection = async () =>{
     try {
         console.log('🔄 Inicializando conexión a MongoDB...');
@@ -35,6 +63,7 @@ const getConnection = async () =>{
         console.log('✅ Conectado exitosamente a MongoDB');
         console.log('Base de datos:', mongoose.connection.name);
     } catch(error){
+        ultimoErrorDb = error.message;
         console.error('❌ Error al conectar a la base de datos:');
         console.error('Tipo de error:', error.name);
         console.error('Mensaje:', error.message);
@@ -57,4 +86,5 @@ const getConnection = async () =>{
 
 module.exports = {
     getConnection,
+    getDbStatus,
 }
