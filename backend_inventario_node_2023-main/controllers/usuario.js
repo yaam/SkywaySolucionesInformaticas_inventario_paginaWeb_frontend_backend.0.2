@@ -113,8 +113,8 @@ try{
 const getUsuarioId = async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.params.usuarioId);
-        if(!inventario){
-            return res.status(404).send('usario no definido ')
+        if(!usuario){
+            return res.status(404).send('usuario no definido ')
         }
         res.send(usuario);       
     } catch (error) {

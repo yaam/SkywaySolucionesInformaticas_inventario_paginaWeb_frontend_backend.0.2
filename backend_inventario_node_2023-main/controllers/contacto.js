@@ -1,6 +1,6 @@
 const MensajeContacto = require('../modelos/MensajeContacto');
 const { request, response } = require('express');
-const { enviarEmail, registrarErrorEmail, obtenerRemitente } = require('../helpers/email');
+const { enviarEmail, escaparHtml, registrarErrorEmail, obtenerRemitente } = require('../helpers/email');
 
 /**
  * Handles incoming contact messages by extracting data from the request body,
@@ -43,16 +43,16 @@ const crearMensajeContacto = async (req = request, res = response) => {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #0066cc; margin-top: 0;">Datos del Cliente:</h3>
-                        <p style="margin: 5px 0;"><strong>👤 Nombre:</strong> ${nombre}</p>
-                        <p style="margin: 5px 0;"><strong>📧 Email:</strong> ${email}</p>
-                        <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> ${telefono || 'No proporcionado'}</p>
-                        <p style="margin: 5px 0;"><strong>☎️ Línea de Llamada:</strong> ${lineaLlamada || 'No proporcionado'}</p>
-                        <p style="margin: 5px 0;"><strong>💬 WhatsApp:</strong> ${whatsapp || 'No proporcionado'}</p>
+                        <p style="margin: 5px 0;"><strong>👤 Nombre:</strong> ${escaparHtml(nombre)}</p>
+                        <p style="margin: 5px 0;"><strong>📧 Email:</strong> ${escaparHtml(email)}</p>
+                        <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> ${escaparHtml(telefono || 'No proporcionado')}</p>
+                        <p style="margin: 5px 0;"><strong>☎️ Línea de Llamada:</strong> ${escaparHtml(lineaLlamada || 'No proporcionado')}</p>
+                        <p style="margin: 5px 0;"><strong>💬 WhatsApp:</strong> ${escaparHtml(whatsapp || 'No proporcionado')}</p>
                     </div>
                     
                     <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #0066cc; margin-top: 0;">💬 Mensaje:</h3>
-                        <p style="margin: 5px 0; white-space: pre-wrap;">${mensaje}</p>
+                        <p style="margin: 5px 0; white-space: pre-wrap;">${escaparHtml(mensaje)}</p>
                     </div>
                     
                     <p style="text-align: center; color: #666; font-size: 12px; margin-top: 30px;">
@@ -88,8 +88,7 @@ const crearMensajeContacto = async (req = request, res = response) => {
             return res.status(201).json({ 
                 mensaje: 'Mensaje de contacto recibido con éxito (correo no enviado)', 
                 mensajeContacto,
-                emailEnviado: false,
-                error: emailError.message
+                emailEnviado: false
             });
         }
 

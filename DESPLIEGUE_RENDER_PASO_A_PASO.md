@@ -17,7 +17,7 @@ Antes de comenzar, asegúrate de tener:
 - ✅ Repositorio en GitHub con tu código
 - ✅ Cuenta de Render (gratis: https://render.com)
 - ✅ Cuenta de MongoDB Atlas configurada
-- ✅ Contraseña de aplicación de Outlook: `kmaywfcxvdpacvhe`
+- ✅ Contraseña de aplicación de Outlook: `<CONTRASEÑA_DE_APLICACION>`
 
 ---
 
@@ -181,7 +181,7 @@ Value: yaam17@outlook.com
 ### Variable 5: EMAIL_PASS
 ```
 Key:   EMAIL_PASS
-Value: kmaywfcxvdpacvhe
+Value: <CONTRASEÑA_DE_APLICACION>
 ```
 **⚠️ IMPORTANTE:** Esta es tu contraseña de aplicación de Outlook  
 **Click:** "Add Environment Variable"
@@ -367,7 +367,7 @@ https://cloud.mongodb.com
 ### Los correos siguen sin enviarse
 
 **Solución:**
-1. Verifica que EMAIL_PASS sea: `kmaywfcxvdpacvhe`
+1. Verifica que EMAIL_PASS sea: `<CONTRASEÑA_DE_APLICACION>`
 2. Revisa los logs para ver el error exacto
 3. Asegúrate de que la contraseña de aplicación sea válida
 

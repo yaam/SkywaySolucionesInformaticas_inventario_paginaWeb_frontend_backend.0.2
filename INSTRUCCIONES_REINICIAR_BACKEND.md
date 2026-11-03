@@ -6,7 +6,7 @@ La contraseña de aplicación de Outlook ha sido configurada correctamente en el
 
 ```
 EMAIL_USER=yaam17@outlook.com
-EMAIL_PASS=kmaywfcxvdpacvhe ✅
+EMAIL_PASS=<CONTRASEÑA_DE_APLICACION> ✅
 EMAIL_FROM=yaam17@outlook.com
 ```
 
@@ -57,7 +57,7 @@ EMAIL_FROM=yaam17@outlook.com
 3. **Ve a:** **Environment** (menú lateral)
 4. **Busca:** `EMAIL_PASS`
 5. **Haz clic en editar** (icono de lápiz)
-6. **Reemplaza con:** `kmaywfcxvdpacvhe`
+6. **Reemplaza con:** `<CONTRASEÑA_DE_APLICACION>`
 7. **Guarda** - Render redesplegará automáticamente
 
 ---
@@ -126,7 +126,7 @@ En la consola donde corre el backend, busca mensajes de error:
 ❌ Error al enviar correo: Invalid login: 535 5.7.3 Authentication unsuccessful
 ```
 **Solución:**
-- Verifica que la contraseña `kmaywfcxvdpacvhe` sea correcta
+- Verifica que la contraseña `<CONTRASEÑA_DE_APLICACION>` sea correcta
 - Verifica que sea una **contraseña de aplicación**, no tu contraseña normal
 
 ---
@@ -164,7 +164,7 @@ Si los correos llegan pero van a la carpeta de SPAM:
 
 ## 📊 Checklist Final
 
-- [ ] Archivo `.env` actualizado con `EMAIL_PASS=kmaywfcxvdpacvhe`
+- [ ] Archivo `.env` actualizado con `EMAIL_PASS=<CONTRASEÑA_DE_APLICACION>`
 - [ ] Backend reiniciado (Ctrl+C y `node index.js`)
 - [ ] Formulario de contacto probado
 - [ ] Correo recibido en **menos de 10 segundos**

@@ -1,7 +1,7 @@
 const VisitaTecnica = require('../modelos/VisitaTecnica');
 const { request, response } = require('express');
 const crypto = require('crypto');
-const { enviarEmail, registrarErrorEmail, obtenerRemitente, obtenerDestinatario } = require('../helpers/email');
+const { enviarEmail, escaparHtml, registrarErrorEmail, obtenerRemitente, obtenerDestinatario } = require('../helpers/email');
 
 // Generar token aleatorio
 const generarToken = () => {
@@ -90,6 +90,7 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         visitaTecnica.marca = marca;
         visitaTecnica.estadoEquipo = estadoEquipo;
         visitaTecnica.tokenConfirmacion = token;
+        visitaTecnica.tokenVerificado = false;
         visitaTecnica.fechaActualizacion = new Date();
 
         await visitaTecnica.save();
@@ -106,17 +107,17 @@ const completarVisitaTecnica = async (req = request, res = response) => {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #0066cc; margin-top: 0;">Detalles del Servicio:</h3>
-                        <p style="margin: 5px 0;"><strong>👤 Cliente:</strong> ${visitaTecnica.nombre}</p>
-                        <p style="margin: 5px 0;"><strong>📞 Contacto:</strong> ${visitaTecnica.contacto}</p>
-                        <p style="margin: 5px 0;"><strong>🛠️ Tipo de Servicio:</strong> ${visitaTecnica.tipoServicio}</p>
-                        <p style="margin: 5px 0;"><strong>💻 Tipo de Equipo:</strong> ${visitaTecnica.tipoEquipo}</p>
-                        <p style="margin: 5px 0;"><strong>📍 Dirección:</strong> ${visitaTecnica.direccion}</p>
+                        <p style="margin: 5px 0;"><strong>👤 Cliente:</strong> ${escaparHtml(visitaTecnica.nombre)}</p>
+                        <p style="margin: 5px 0;"><strong>📞 Contacto:</strong> ${escaparHtml(visitaTecnica.contacto)}</p>
+                        <p style="margin: 5px 0;"><strong>🛠️ Tipo de Servicio:</strong> ${escaparHtml(visitaTecnica.tipoServicio)}</p>
+                        <p style="margin: 5px 0;"><strong>💻 Tipo de Equipo:</strong> ${escaparHtml(visitaTecnica.tipoEquipo)}</p>
+                        <p style="margin: 5px 0;"><strong>📍 Dirección:</strong> ${escaparHtml(visitaTecnica.direccion)}</p>
                         <p style="margin: 5px 0;"><strong>📅 Fecha Completado:</strong> ${new Date().toLocaleString('es-CO')}</p>
                     </div>
                     
                     <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #0066cc; margin-top: 0;">📝 Observaciones del Técnico:</h3>
-                        <p style="margin: 5px 0; white-space: pre-wrap;">${observacionesTecnico}</p>
+                        <p style="margin: 5px 0; white-space: pre-wrap;">${escaparHtml(observacionesTecnico)}</p>
                     </div>
                     
                     <div style="background-color: #fff3cd; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ffc107;">
@@ -202,7 +203,12 @@ const verificarToken = async (req = request, res = response) => {
             return res.status(404).json({ mensaje: 'Visita técnica no encontrada' });
         }
 
-        if (visitaTecnica.tokenConfirmacion !== token) {
+        const tokenEsperado = typeof visitaTecnica.tokenConfirmacion === 'string' ? Buffer.from(visitaTecnica.tokenConfirmacion) : null;
+        const tokenRecibido = typeof token === 'string' ? Buffer.from(token.trim().toUpperCase()) : null;
+        const tokenValido = Boolean(tokenEsperado && tokenRecibido)
+            && tokenRecibido.length === tokenEsperado.length
+            && crypto.timingSafeEqual(tokenRecibido, tokenEsperado);
+        if (!tokenValido) {
             return res.status(400).json({ mensaje: 'Token incorrecto. Verifica el token recibido por email.' });
         }
 
@@ -310,7 +316,7 @@ const transferirAInventario = async (req = request, res = response) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ mensaje: 'Error al transferir a inventario', error: error.message });
+        return res.status(500).json({ mensaje: 'Error al transferir a inventario' });
     }
 };
 
