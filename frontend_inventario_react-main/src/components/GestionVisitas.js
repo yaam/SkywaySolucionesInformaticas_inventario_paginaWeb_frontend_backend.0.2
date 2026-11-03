@@ -145,7 +145,7 @@ export const GestionVisitas = () => {
 
             const imagenFinalBase64 = await convertirImagenABase64(imagenFinal);
 
-            await axiosInstance.put(`/api/agendar-visita/completar/${visitaSeleccionada._id}`, {
+            const { data } = await axiosInstance.put(`/api/agendar-visita/completar/${visitaSeleccionada._id}`, {
                 imagenFinal: imagenFinalBase64,
                 observacionesTecnico: observaciones,
                 usuario: datosAsociacion.usuario,
@@ -154,19 +154,21 @@ export const GestionVisitas = () => {
             });
 
             swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                html: `
+                icon: data.emailEnviado ? 'success' : 'warning',
+                title: data.emailEnviado ? '¡Éxito!' : 'Visita completada',
+                html: data.emailEnviado ? `
                     <p>Visita técnica completada exitosamente.</p>
-                    <p><strong>Se ha enviado un email a yaam17@outlook.com con el token de confirmación.</strong></p>
+                    <p><strong>Se ha enviado un email a ${data.emailDestinatario} con el token de confirmación.</strong></p>
                     <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 15px;">
                         <h5 style="color: #856404; margin: 0 0 10px 0;">🔐 Seguridad del Token</h5>
                         <p style="color: #856404; margin: 0; font-size: 14px;">
-                            Por seguridad, el token SOLO está visible en la consola del backend (PowerShell).
-                            El token fue enviado a yaam17@outlook.com y debe ser ingresado para transferir al inventario.
+                            Por seguridad, el token no se muestra en esta pantalla.
+                            Búscalo en el buzón ${data.emailDestinatario} e ingrésalo para transferir al inventario.
                         </p>
                     </div>
-                    <p class="text-muted mt-2">Revisa la consola del backend para ver el token generado.</p>
+                ` : `
+                    <p>Visita técnica completada, pero <strong>no se pudo enviar el email con el token</strong>.</p>
+                    <p class="text-muted mt-2">El token generado está disponible en los logs del backend.</p>
                 `
             });
             
@@ -243,7 +245,7 @@ export const GestionVisitas = () => {
             <div className="alert alert-info">
                 <h5>ℹ️ Flujo de Trabajo:</h5>
                 <ol className="mb-0">
-                    <li><strong>Completar Visita:</strong> El técnico sube la imagen final y observaciones. Se genera un token y se envía por email a yaam17@outlook.com.</li>
+                    <li><strong>Completar Visita:</strong> El técnico sube la imagen final y observaciones. Se genera un token y se envía al correo de notificaciones configurado.</li>
                     <li><strong>Verificar Token:</strong> El técnico ingresa el token recibido en el email para autorizar la transferencia.</li>
                     <li><strong>Transferir a Inventario:</strong> Una vez verificado el token, el equipo se agrega al inventario.</li>
                 </ol>
@@ -393,7 +395,7 @@ export const GestionVisitas = () => {
                                 <div className="modal-body">
                                     <div className="alert alert-info">
                                         <strong>ℹ️ Importante:</strong> Al completar la visita, se generará un token de confirmación 
-                                        que se enviará por email a <strong>yaam17@outlook.com</strong>. Este token será requerido 
+                                        que se enviará al correo de notificaciones configurado. Este token será requerido 
                                         para transferir el equipo al inventario.
                                     </div>
 
@@ -495,8 +497,8 @@ export const GestionVisitas = () => {
                                     <div className="alert alert-warning">
                                         <h6><strong>🔐 Verificación de Seguridad</strong></h6>
                                         <p className="mb-0">
-                                            Debes ingresar el token de confirmación que fue enviado al correo 
-                                            <strong> yaam17@outlook.com</strong> cuando se completó esta visita. 
+                                            Debes ingresar el token de confirmación que fue enviado al correo de 
+                                            notificaciones cuando se completó esta visita. 
                                             Sin este token, no podrás transferir el equipo al inventario.
                                         </p>
                                     </div>

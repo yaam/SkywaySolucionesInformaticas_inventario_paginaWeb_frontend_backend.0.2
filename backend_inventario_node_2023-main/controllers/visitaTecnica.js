@@ -152,6 +152,9 @@ const completarVisitaTecnica = async (req = request, res = response) => {
             `
         };
 
+        const emailDestinatario = obtenerDestinatario();
+        let emailEnviado = false;
+
         // Verificar credenciales antes de enviar
         if (!process.env.SENDGRID_API_KEY) {
             console.error('❌ ERROR: SENDGRID_API_KEY no configurada en .env');
@@ -163,6 +166,7 @@ const completarVisitaTecnica = async (req = request, res = response) => {
             // Intentar enviar el correo
             try {
                 const info = await enviarEmail(mailOptions);
+                emailEnviado = true;
                 console.log('✅ Email enviado exitosamente a', info.to, 'con token:', token);
                 console.log('📬 ID del mensaje:', info.messageId);
                 console.log('═══════════════════════════════════════════════');
@@ -178,9 +182,13 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         }
 
         return res.status(200).json({ 
-            mensaje: `Visita técnica completada. Se ha enviado el token por email a ${obtenerDestinatario()}`, 
+            mensaje: emailEnviado
+                ? `Visita técnica completada. Se ha enviado el token por email a ${emailDestinatario}`
+                : 'Visita técnica completada, pero el email con el token no se pudo enviar',
             visitaTecnica,
-            tokenGenerado: true
+            tokenGenerado: true,
+            emailEnviado,
+            emailDestinatario
             // NO enviar el token al frontend por seguridad
         });
 

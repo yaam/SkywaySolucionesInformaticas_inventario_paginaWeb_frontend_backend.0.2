@@ -78,7 +78,7 @@ export const Contacto = () => {
                         <div className="card-body p-4">
                             <p className="text-muted mb-4">
                                 Completa el formulario y nos pondremos en contacto contigo a la brevedad. 
-                                Se enviará una notificación a <strong>yaam17@outlook.com</strong> con tus datos de contacto.
+                                Se enviará una notificación a nuestro equipo con tus datos de contacto.
                             </p>
 
                             <form onSubmit={handleSubmit}>
