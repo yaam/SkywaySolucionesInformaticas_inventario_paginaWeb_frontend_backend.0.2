@@ -1,5 +1,5 @@
 const express = require('express');
-const {getConnection} = require('./db/db-connection-mongo');
+const {getConnection, getDbStatus} = require('./db/db-connection-mongo');
 require('dotenv').config();
 const cors = require ('cors');
 const app = express();
@@ -38,8 +38,14 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // Ruta de health check para Render
+// Responde 200 aunque la DB falle para que Render no reinicie el servicio; el estado real va en `db`
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok', message: 'Server is running' });
+    const db = getDbStatus();
+    res.status(200).json({
+        status: db.state === 'connected' ? 'ok' : 'degraded',
+        message: 'Server is running',
+        db,
+    });
 });
 
 getConnection();
