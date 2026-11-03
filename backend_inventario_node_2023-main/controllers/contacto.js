@@ -1,8 +1,6 @@
 const MensajeContacto = require('../modelos/MensajeContacto');
 const { request, response } = require('express');
-const sgMail = require('@sendgrid/mail');
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const { enviarEmail, registrarErrorEmail, obtenerRemitente } = require('../helpers/email');
 
 /**
  * Handles incoming contact messages by extracting data from the request body,
@@ -33,25 +31,10 @@ const crearMensajeContacto = async (req = request, res = response) => {
             console.log('⚠️ No se pudo guardar en MongoDB (continuando con envío de email):', dbError.message);
         }
 
-        // Configurar el transporter de nodemailer para Outlook
-        // NOTA: Usando servicio 'hotmail' en lugar de configuración manual
-        // para evitar problemas de firewall
-        // const transporter = nodemailer.createTransport({
-        //     service: 'hotmail',
-        //     auth: {
-        //         user: process.env.EMAIL_USER,
-        //         pass: process.env.EMAIL_PASS
-        //     }
-        // });
-
-        // Verificar configuración
-        console.log('📧 Intentando enviar correo desde:', process.env.EMAIL_USER);
-        // console.log('🔐 Contraseña configurada:', process.env.EMAIL_PASS ? '✅ Sí (oculta)' : '❌ NO CONFIGURADA');
+        console.log('📧 Intentando enviar correo desde:', obtenerRemitente());
 
         // Configurar el contenido del correo
         const mailOptions = {
-            from: process.env.EMAIL_USER || 'yaam17@outlook.com',
-            to: 'yeisonangulo61@gmail.com', // CAMBIA ESTA LÍNEA A TU CORREO DE PRUEBA
             subject: '🔔 Nuevo Cliente Solicita Contacto - Skyway Soluciones Informáticas',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
@@ -91,8 +74,8 @@ const crearMensajeContacto = async (req = request, res = response) => {
 
         // Intentar enviar el correo
         try {
-            const info = await sgMail.send(mailOptions);
-            console.log('✅ Correo de notificación enviado exitosamente a yaam17@outlook.com');
+            const info = await enviarEmail(mailOptions);
+            console.log('✅ Correo de notificación enviado exitosamente a', info.to);
             console.log('📬 ID del mensaje:', info.messageId);
             return res.status(201).json({ 
                 mensaje: 'Mensaje de contacto recibido con éxito y notificación enviada', 
@@ -100,16 +83,8 @@ const crearMensajeContacto = async (req = request, res = response) => {
                 emailEnviado: true
             });
         } catch (emailError) {
-            console.error('❌ Error al enviar correo:', emailError.message);
-            console.error('📋 Detalles del error:', emailError);
-            if (emailError.code) {
-                console.error('🔢 Código de error:', emailError.code);
-            }
-            if (emailError.response) {
-                console.error('📝 Respuesta del servidor:', emailError.response);
-            }
+            registrarErrorEmail(emailError);
             console.log('⚠️ Mensaje guardado en la base de datos, pero el correo no se pudo enviar');
-            // console.log('⚠️ Verifica que EMAIL_PASS sea la contraseña de aplicación de Outlook');
             return res.status(201).json({ 
                 mensaje: 'Mensaje de contacto recibido con éxito (correo no enviado)', 
                 mensajeContacto,

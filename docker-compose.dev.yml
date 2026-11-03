@@ -13,9 +13,10 @@ services:
     environment:
       - PORT=4001
       - MONGO_URI=${MONGO_URI}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
       - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_TO=${EMAIL_TO}
       - NODE_ENV=development
     volumes:
       # Sincronizar código para hot-reload

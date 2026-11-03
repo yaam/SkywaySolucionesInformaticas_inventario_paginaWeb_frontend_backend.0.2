@@ -1,3 +1,5 @@
+> ⚠️ **OBSOLETO:** el backend ya no usa contraseñas de aplicación de Outlook. Ver [CONFIGURACION_EMAIL_SENDGRID.md](CONFIGURACION_EMAIL_SENDGRID.md).
+
 # 🔐 Guía: Contraseña de Aplicación de Outlook
 
 ## ⚠️ IMPORTANTE

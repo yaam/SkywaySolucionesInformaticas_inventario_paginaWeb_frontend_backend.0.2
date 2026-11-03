@@ -1,9 +1,7 @@
 const VisitaTecnica = require('../modelos/VisitaTecnica');
 const { request, response } = require('express');
-const sgMail = require('@sendgrid/mail');
 const crypto = require('crypto');
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const { enviarEmail, registrarErrorEmail, obtenerRemitente, obtenerDestinatario } = require('../helpers/email');
 
 // Generar token aleatorio
 const generarToken = () => {
@@ -96,39 +94,10 @@ const completarVisitaTecnica = async (req = request, res = response) => {
 
         await visitaTecnica.save();
 
-        // Configurar el transporter de nodemailer para Outlook (optimizado)
-        // const transporter = nodemailer.createTransport({
-        //     host: 'smtp-mail.outlook.com',
-        //     port: 587,
-        //     secure: false, // true para puerto 465, false para 587
-        //     auth: {
-        //         user: process.env.EMAIL_USER,
-        //         pass: process.env.EMAIL_PASS
-        //     },
-        //     tls: {
-        //         ciphers: 'SSLv3',
-        //         rejectUnauthorized: true
-        //     },
-        //     // Configuraciones de rendimiento
-        //     pool: true, // Usa pool de conexiones para envíos rápidos
-        //     maxConnections: 5,
-        //     maxMessages: 10,
-        //     rateDelta: 1000, // milisegundos
-        //     rateLimit: 5, // máximo 5 emails por segundo
-        //     // Timeouts para evitar esperas infinitas
-        //     connectionTimeout: 10000, // 10 segundos
-        //     greetingTimeout: 5000, // 5 segundos
-        //     socketTimeout: 15000 // 15 segundos
-        // });
-
-        // Verificar configuración
-        console.log('📧 Intentando enviar token desde:', process.env.EMAIL_USER);
-        // console.log('🔐 Contraseña configurada:', process.env.EMAIL_PASS ? '✅ Sí (oculta)' : '❌ NO CONFIGURADA');
+        console.log('📧 Intentando enviar token desde:', obtenerRemitente());
 
         // Configurar el contenido del correo para el técnico
         const mailOptions = {
-            from: process.env.EMAIL_USER || 'yaam17@outlook.com',
-            to: 'yeisonangulo61@gmail.com', // CAMBIA ESTA LÍNEA A TU CORREO DE PRUEBA
             subject: '🔧 Trabajo Completado - Skyway Soluciones Informáticas',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
@@ -193,35 +162,27 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         } else {
             // Intentar enviar el correo
             try {
-                const info = await sgMail.send(mailOptions);
-                console.log('✅ Email enviado exitosamente a yaam17@outlook.com con token:', token);
+                const info = await enviarEmail(mailOptions);
+                console.log('✅ Email enviado exitosamente a', info.to, 'con token:', token);
                 console.log('📬 ID del mensaje:', info.messageId);
                 console.log('═══════════════════════════════════════════════');
                 console.log('🔐 TOKEN DE CONFIRMACIÓN GENERADO: ' + token);
                 console.log('═══════════════════════════════════════════════');
             } catch (emailError) {
-                console.error('❌ Error al enviar correo:', emailError.message);
-                console.error('📋 Detalles del error:', emailError);
-                if (emailError.code) {
-                    console.error('🔢 Código de error:', emailError.code);
-                }
-                if (emailError.response) {
-                    console.error('📝 Respuesta del servidor:', emailError.response);
-                }
+                registrarErrorEmail(emailError);
                 console.log('═══════════════════════════════════════════════');
                 console.log('🔐 TOKEN DE CONFIRMACIÓN GENERADO: ' + token);
                 console.log('⚠️  El email no se envió, pero el token está disponible');
-                // console.log('⚠️  Verifica que EMAIL_PASS sea la contraseña de aplicación');
                 console.log('═══════════════════════════════════════════════');
             }
         }
 
-               return res.status(200).json({ 
-                   mensaje: 'Visita técnica completada. Se ha enviado el token por email a yaam17@outlook.com', 
-                   visitaTecnica,
-                   tokenGenerado: true
-                   // NO enviar el token al frontend por seguridad
-               });
+        return res.status(200).json({ 
+            mensaje: `Visita técnica completada. Se ha enviado el token por email a ${obtenerDestinatario()}`, 
+            visitaTecnica,
+            tokenGenerado: true
+            // NO enviar el token al frontend por seguridad
+        });
 
     } catch (error) {
         console.log(error);
