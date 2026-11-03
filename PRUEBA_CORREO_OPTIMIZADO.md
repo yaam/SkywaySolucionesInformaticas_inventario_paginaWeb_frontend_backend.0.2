@@ -13,7 +13,7 @@
 
 ## 🚀 Configuración Aplicada
 
-✅ **Contraseña de aplicación de Outlook:** `kmaywfcxvdpacvhe`  
+✅ **Contraseña de aplicación de Outlook:** `<CONTRASEÑA_DE_APLICACION>`  
 ✅ **Email configurado:** `yaam17@outlook.com`  
 ✅ **Puerto del backend:** `4001`  
 ✅ **Optimizaciones activadas:**
@@ -154,7 +154,7 @@ Para aplicar los mismos cambios en producción:
 3. **Ve a: Environment**
 4. **Actualiza la variable:**
    ```
-   EMAIL_PASS = kmaywfcxvdpacvhe
+   EMAIL_PASS = <CONTRASEÑA_DE_APLICACION>
    ```
 5. **Guarda** - Render redesplegará automáticamente
 6. **Espera 2-3 minutos** para que el nuevo despliegue termine
@@ -194,7 +194,7 @@ Para iniciar el backend rápidamente en el futuro:
 
 ### Los correos no llegan después de 30 segundos
 
-- Verifica que `EMAIL_PASS=kmaywfcxvdpacvhe` en `.env`
+- Verifica que `EMAIL_PASS=<CONTRASEÑA_DE_APLICACION>` en `.env`
 - Reinicia el backend (cierra la ventana CMD y abre nuevamente)
 - Verifica los logs en la consola del backend
 

@@ -25,7 +25,7 @@ Click en **"Add Environment Variable"** y agrega una por una:
 #### Variable 1: MONGO_URI
 ```
 Key: MONGO_URI
-Value: mongodb+srv://faludni_db_user:MczT7pU2B4sJzLDc@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+Value: mongodb+srv://<USUARIO>:<PASSWORD>@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
 ```
 
 #### Variable 2: PORT
@@ -96,7 +96,7 @@ Asegúrate de tener **TODAS** estas variables configuradas:
 
 1. Database Access → Database Users
 2. Asegúrate de que el usuario existe y tiene permisos
-3. Usuario actual: `faludni_db_user`
+3. Usuario actual: `<USUARIO>`
 
 ---
 
@@ -107,7 +107,7 @@ En el dashboard de Render, deberías ver algo así:
 ```
 Environment Variables (6)
 
-MONGO_URI          mongodb+srv://faludni...    [Edit] [Delete]
+MONGO_URI          mongodb+srv://<USUARIO>...    [Edit] [Delete]
 PORT               4001                        [Edit] [Delete]
 NODE_ENV           production                  [Edit] [Delete]
 EMAIL_USER         yaam17@outlook.com          [Edit] [Delete]
