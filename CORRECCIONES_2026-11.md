@@ -74,3 +74,10 @@ La aplicación no usa modelos de IA, así que no hay superficie de *prompt injec
 ### Variables nuevas en Render
 
 `ADMIN_USER`, `ADMIN_PASSWORD` (larga y única), `JWT_SECRET` (aleatoria, ≥32 caracteres; `render.yaml` la genera) y `ALLOWED_ORIGINS`.
+
+## Docker
+
+- Imágenes en `node:22-alpine` (helmet 8 y el frontend requieren Node ≥18/22).
+- `nginx.conf` hace proxy de `/api`, `/usuario`, `/marca`, `/estadoEquipo`, `/uploads` y `/health` al backend: el frontend usa `REACT_APP_BASE_URL=/` (mismo origen, sin CORS) y añade cabeceras `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`.
+- `docker-compose.yml`: pasa `ADMIN_USER`, `ADMIN_PASSWORD`, `JWT_SECRET`, `ALLOWED_ORIGINS`; healthcheck en `/health`; backend publicado solo en `127.0.0.1`; MongoDB sin puerto publicado y `MONGO_ROOT_PASSWORD` obligatoria (antes `password` por defecto). Si `MONGO_URI` está vacío usa el contenedor `mongodb`.
+- Uso: `cp env.docker.example .env`, completar valores y `docker compose up -d --build`; la web queda en `http://localhost`.

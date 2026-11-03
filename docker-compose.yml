@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend - API Node.js
   backend:
@@ -8,10 +6,15 @@ services:
       dockerfile: Dockerfile
     container_name: skyway-backend
     ports:
-      - "4001:4001"
+      - "127.0.0.1:4001:4001"
     environment:
       - PORT=4001
-      - MONGO_URI=${MONGO_URI}
+      - NODE_ENV=production
+      - MONGO_URI=${MONGO_URI:-mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD}@mongodb:27017/inventarios?authSource=admin}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_FROM=${EMAIL_FROM}
@@ -28,7 +31,7 @@ services:
     depends_on:
       - mongodb
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4001/"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -40,10 +43,10 @@ services:
       context: ./frontend_inventario_react-main
       dockerfile: Dockerfile
       args:
-        - REACT_APP_BASE_URL=${REACT_APP_BASE_URL:-http://localhost:4001}
+        - REACT_APP_BASE_URL=${REACT_APP_BASE_URL:-/}
     container_name: skyway-frontend
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
     restart: unless-stopped
@@ -59,11 +62,10 @@ services:
   mongodb:
     image: mongo:6.0
     container_name: skyway-mongodb
-    ports:
-      - "27017:27017"
+    # Sin puerto publicado: solo accesible desde la red interna de Docker
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:?Define MONGO_ROOT_PASSWORD en .env}
       - MONGO_INITDB_DATABASE=inventarios
     volumes:
       - mongodb_data:/data/db

@@ -13,6 +13,10 @@ services:
     environment:
       - PORT=4001
       - MONGO_URI=${MONGO_URI}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_FROM=${EMAIL_FROM}
@@ -56,10 +60,10 @@ services:
     image: mongo:6.0
     container_name: skyway-mongodb-dev
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:?Define MONGO_ROOT_PASSWORD en .env}
       - MONGO_INITDB_DATABASE=inventarios
     volumes:
       - mongodb_data_dev:/data/db

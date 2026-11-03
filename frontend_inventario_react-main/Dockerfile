@@ -1,5 +1,5 @@
 # Etapa 1: Build de la aplicación React
-FROM node:16-alpine as build
+FROM node:22-alpine as build
 
 WORKDIR /app
 
@@ -13,8 +13,9 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Argumento de build para la URL del backend
-ARG REACT_APP_BASE_URL=http://localhost:4001
+ARG REACT_APP_BASE_URL=/
 ENV REACT_APP_BASE_URL=$REACT_APP_BASE_URL
+ENV DISABLE_ESLINT_PLUGIN=true
 
 # Build de la aplicación
 RUN npm run build
