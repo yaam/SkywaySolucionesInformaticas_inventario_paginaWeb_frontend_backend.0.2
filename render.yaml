@@ -22,6 +22,14 @@ services:
         sync: false
       - key: EMAIL_TO
         sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://skyway-soluciones-informaticas-inve.vercel.app
     healthCheckPath: /health
 
 databases:
