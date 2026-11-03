@@ -5,6 +5,13 @@ const sgMail = require('@sendgrid/mail');
 const obtenerRemitente = () => process.env.EMAIL_FROM || process.env.EMAIL_USER || 'yaam17@outlook.com';
 const obtenerDestinatario = () => process.env.EMAIL_TO || 'yeisonangulo61@gmail.com';
 
+const escaparHtml = (valor) => String(valor ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 const enviarEmail = async ({ to = obtenerDestinatario(), subject, html }) => {
     if (!process.env.SENDGRID_API_KEY) {
         throw new Error('SENDGRID_API_KEY no configurada');
@@ -36,4 +43,4 @@ const registrarErrorEmail = (error) => {
     }
 };
 
-module.exports = { enviarEmail, registrarErrorEmail, obtenerRemitente, obtenerDestinatario };
+module.exports = { enviarEmail, escaparHtml, registrarErrorEmail, obtenerRemitente, obtenerDestinatario };
