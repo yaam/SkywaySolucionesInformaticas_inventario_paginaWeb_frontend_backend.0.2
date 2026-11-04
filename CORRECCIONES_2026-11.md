@@ -52,3 +52,32 @@ Resultado de `npm audit --omit=dev` en el backend: de vulnerabilidades críticas
    - No hay límite de intentos en `verificar-token`: el token tiene 6 caracteres hexadecimales, unos 16 millones de combinaciones.
    - `axios@0.27` en el frontend tiene vulnerabilidades altas; hay que actualizar a la versión 1.x.
 5. **CI.** `.github/workflows/node.js.yml` ejecuta `npm ci` en la raíz, donde no hay `package.json` ni lockfile, por lo que falla siempre.
+
+## Endurecimiento de seguridad (ataques web y bots / agentes de IA)
+
+| Riesgo | Corrección |
+|---|---|
+| API de administración sin autenticación | Login `POST /api/auth/login` (JWT HS256, 8 h). `/usuario`, `/estadoEquipo`, `/marca`, `/api/tipos`, `/api/inventarios` y la gestión de visitas exigen `Authorization: Bearer`. Sin `ADMIN_USER`, `ADMIN_PASSWORD` o `JWT_SECRET` (≥32 caracteres) responden 503 (falla cerrada). |
+| Fuerza bruta (login, token de visita) | `express-rate-limit`: login 5 intentos fallidos / 15 min, verificación de token 5 / 15 min, formularios públicos 10 / hora, general 300 / 15 min por IP. |
+| Spam automatizado (bots, agentes de IA) en Contacto y Agendar visita | Campo honeypot oculto `sitioWeb`; validación de tipo y longitud (2000 caracteres) e imágenes solo `data:image/(png|jpeg|gif|webp);base64`. |
+| Inyección NoSQL (`{"$ne": null}`) | `mongoose.set('sanitizeFilter', true)` y rechazo de campos no string. |
+| Payloads enormes | `express.json({ limit: '8mb' })` → 413. |
+| CORS abierto | Solo orígenes de `ALLOWED_ORIGINS` (por defecto el dominio de Vercel y `localhost:3000`). |
+| Cabeceras HTTP | `helmet`. |
+| Fuga del token de confirmación | `GET /api/agendar-visita` ya no devuelve `tokenConfirmacion`; crear visita ya no devuelve el documento completo. |
+| Errores internos | Manejador 404/500 con mensajes genéricos. |
+| Axios 0.27 vulnerable | Actualizado a 1.x. |
+| Frontend | Página `/login`, rutas de administración protegidas y menú de administración oculto sin sesión. Token en `sessionStorage`. |
+
+La aplicación no usa modelos de IA, así que no hay superficie de *prompt injection*; el riesgo de IA es el abuso automatizado, cubierto con los límites anteriores.
+
+### Variables nuevas en Render
+
+`ADMIN_USER`, `ADMIN_PASSWORD` (larga y única), `JWT_SECRET` (aleatoria, ≥32 caracteres; `render.yaml` la genera) y `ALLOWED_ORIGINS`.
+
+## Docker
+
+- Imágenes en `node:22-alpine` (helmet 8 y el frontend requieren Node ≥18/22).
+- `nginx.conf` hace proxy de `/api`, `/usuario`, `/marca`, `/estadoEquipo`, `/uploads` y `/health` al backend: el frontend usa `REACT_APP_BASE_URL=/` (mismo origen, sin CORS) y añade cabeceras `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`.
+- `docker-compose.yml`: pasa `ADMIN_USER`, `ADMIN_PASSWORD`, `JWT_SECRET`, `ALLOWED_ORIGINS`; healthcheck en `/health`; backend publicado solo en `127.0.0.1`; MongoDB sin puerto publicado y `MONGO_ROOT_PASSWORD` obligatoria (antes `password` por defecto). Si `MONGO_URI` está vacío usa el contenedor `mongodb`.
+- Uso: `cp env.docker.example .env`, completar valores y `docker compose up -d --build`; la web queda en `http://localhost`.

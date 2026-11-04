@@ -129,6 +129,8 @@ export const AgendarVisita = () => {
             )}
 
             <form onSubmit={handleSubmit} className="shadow p-4 rounded bg-light">
+                                <input type="text" name="sitioWeb" tabIndex="-1" autoComplete="off" aria-hidden="true"
+                                    onChange={handleChange} style={{ position: 'absolute', left: '-10000px' }} />
                 <div className="mb-3">
                     <label htmlFor="nombre" className="form-label fw-bold">Nombre Completo</label>
                     <input 

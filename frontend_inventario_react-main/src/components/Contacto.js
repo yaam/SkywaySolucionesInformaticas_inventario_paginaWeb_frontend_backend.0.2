@@ -82,6 +82,8 @@ export const Contacto = () => {
                             </p>
 
                             <form onSubmit={handleSubmit}>
+                                <input type="text" name="sitioWeb" tabIndex="-1" autoComplete="off" aria-hidden="true"
+                                    onChange={handleChange} style={{ position: 'absolute', left: '-10000px' }} />
                                 <div className="mb-3">
                                     <label htmlFor="nombre" className="form-label fw-bold">
                                         <i className="bi bi-person"></i> Nombre Completo

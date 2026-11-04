@@ -12,24 +12,27 @@ import { Contacto } from './components/Contacto';
 import { Servicios } from './components/Servicios';
 import { Activos } from './components/Activos';
 import { GestionVisitas } from './components/GestionVisitas';
+import { Login } from './components/Login';
+import { PrivateRoute } from './components/ui/PrivateRoute';
 
 
 const App = () => {
     return <Router>
         <Header/>
         <Switch>
-            <Route exact path='/' component= {Activos} />
-            <Route exact path='/activos' component= {Activos} />
-            <Route exact path='/inventarios' component= {InventarioView} />
-            <Route exact path='/usuarios' component= {UsuarioView} />
-            <Route exact path='/marcas' component= {MarcaView} />
-            <Route exact path='/estados' component= {EstadoView} />
-            <Route exact path='/tipos' component= {TipoView} />
-            <Route exact path='/inventarios/edit/:inventarioId' component={InventarioUpdate} />
+            <PrivateRoute exact path='/' component= {Activos} />
+            <PrivateRoute exact path='/activos' component= {Activos} />
+            <PrivateRoute exact path='/inventarios' component= {InventarioView} />
+            <PrivateRoute exact path='/usuarios' component= {UsuarioView} />
+            <PrivateRoute exact path='/marcas' component= {MarcaView} />
+            <PrivateRoute exact path='/estados' component= {EstadoView} />
+            <PrivateRoute exact path='/tipos' component= {TipoView} />
+            <PrivateRoute exact path='/inventarios/edit/:inventarioId' component={InventarioUpdate} />
             <Route exact path='/agendar-visita' component={AgendarVisita} />
             <Route exact path='/contacto' component={Contacto} />
             <Route exact path='/servicios' component={Servicios} />
-            <Route exact path='/gestion-visitas' component={GestionVisitas} />
+            <Route exact path='/login' component={Login} />
+            <PrivateRoute exact path='/gestion-visitas' component={GestionVisitas} />
             <Redirect to='/activos' />
         </Switch>
 

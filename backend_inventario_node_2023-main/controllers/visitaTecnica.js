@@ -45,7 +45,7 @@ const crearVisitaTecnica = async (req = request, res = response) => {
 
         return res.status(201).json({ 
             mensaje: 'Visita técnica agendada con éxito', 
-            visitaTecnica,
+            visitaTecnica: { _id: visitaTecnica._id, fecha: visitaTecnica.fecha, hora: visitaTecnica.hora },
             whatsappMessage: mensajeWhatsApp
         });
 
@@ -58,7 +58,7 @@ const crearVisitaTecnica = async (req = request, res = response) => {
 // Puedes agregar más funciones aquí para listar, actualizar, eliminar visitas
 const listarVisitasTecnicas = async (req = request, res = response) => {
     try {
-        const visitas = await VisitaTecnica.find();
+        const visitas = await VisitaTecnica.find().select('-tokenConfirmacion');
         return res.json(visitas);
     } catch (error) {
         console.log(error);

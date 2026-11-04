@@ -1,5 +1,5 @@
 # Versión de Node.js a instalar en la imagen
-FROM node:16-alpine
+FROM node:22-alpine
 
 # Crear directorio de trabajo dentro del contenedor
 WORKDIR /usr/src/app
@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Instalar dependencias
-RUN npm install --production
+RUN npm install --omit=dev --no-audit --no-fund
 
 # Copiar todo el código fuente
 COPY . .
