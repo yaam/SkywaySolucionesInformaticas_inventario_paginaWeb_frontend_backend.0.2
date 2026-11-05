@@ -15,7 +15,6 @@ COPY . .
 # Argumento de build para la URL del backend
 ARG REACT_APP_BASE_URL=/
 ENV REACT_APP_BASE_URL=$REACT_APP_BASE_URL
-ENV DISABLE_ESLINT_PLUGIN=true
 
 # Build de la aplicación
 RUN npm run build
