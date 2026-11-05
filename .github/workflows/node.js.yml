@@ -33,6 +33,3 @@ jobs:
         node-version: 22.x
     - run: npm install --no-audit --no-fund
     - run: npm run build
-      env:
-        CI: false
-        DISABLE_ESLINT_PLUGIN: true

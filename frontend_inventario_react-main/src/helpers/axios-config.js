@@ -2,7 +2,7 @@ import axios from 'axios';
 import { obtenerToken, cerrarSesion } from './auth';
 
 const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL || 'http://localhost:4001'
+    baseURL: import.meta.env.REACT_APP_BASE_URL || 'http://localhost:4001'
 });
 
 axiosInstance.interceptors.request.use((config) => {
