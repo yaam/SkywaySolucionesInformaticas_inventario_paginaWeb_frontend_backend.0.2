@@ -158,12 +158,12 @@ export const GestionVisitas = () => {
                 title: '¡Éxito!',
                 html: `
                     <p>Visita técnica completada exitosamente.</p>
-                    <p><strong>Se ha enviado un email a yaam17@proton.me con el token de confirmación.</strong></p>
+                    <p><strong>Se ha enviado un email a yeisonangulo61@gmail.com con el token de confirmación.</strong></p>
                     <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 15px;">
                         <h5 style="color: #856404; margin: 0 0 10px 0;">🔐 Seguridad del Token</h5>
                         <p style="color: #856404; margin: 0; font-size: 14px;">
                             Por seguridad, el token SOLO está visible en la consola del backend (PowerShell).
-                            El token fue enviado a yaam17@proton.me y debe ser ingresado para transferir al inventario.
+                            El token fue enviado a yeisonangulo61@gmail.com y debe ser ingresado para transferir al inventario.
                         </p>
                     </div>
                     <p class="text-muted mt-2">Revisa la consola del backend para ver el token generado.</p>
@@ -243,7 +243,7 @@ export const GestionVisitas = () => {
             <div className="alert alert-info">
                 <h5>ℹ️ Flujo de Trabajo:</h5>
                 <ol className="mb-0">
-                    <li><strong>Completar Visita:</strong> El técnico sube la imagen final y observaciones. Se genera un token y se envía por email a yaam17@proton.me.</li>
+                    <li><strong>Completar Visita:</strong> El técnico sube la imagen final y observaciones. Se genera un token y se envía por email a yeisonangulo61@gmail.com.</li>
                     <li><strong>Verificar Token:</strong> El técnico ingresa el token recibido en el email para autorizar la transferencia.</li>
                     <li><strong>Transferir a Inventario:</strong> Una vez verificado el token, el equipo se agrega al inventario.</li>
                 </ol>
@@ -393,7 +393,7 @@ export const GestionVisitas = () => {
                                 <div className="modal-body">
                                     <div className="alert alert-info">
                                         <strong>ℹ️ Importante:</strong> Al completar la visita, se generará un token de confirmación 
-                                        que se enviará por email a <strong>yaam17@proton.me</strong>. Este token será requerido 
+                                        que se enviará por email a <strong>yeisonangulo61@gmail.com</strong>. Este token será requerido 
                                         para transferir el equipo al inventario.
                                     </div>
 
@@ -496,7 +496,7 @@ export const GestionVisitas = () => {
                                         <h6><strong>🔐 Verificación de Seguridad</strong></h6>
                                         <p className="mb-0">
                                             Debes ingresar el token de confirmación que fue enviado al correo 
-                                            <strong> yaam17@proton.me</strong> cuando se completó esta visita. 
+                                            <strong> yeisonangulo61@gmail.com</strong> cuando se completó esta visita. 
                                             Sin este token, no podrás transferir el equipo al inventario.
                                         </p>
                                     </div>
