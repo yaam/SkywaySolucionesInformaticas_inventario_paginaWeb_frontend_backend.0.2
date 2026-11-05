@@ -1,6 +1,7 @@
 const MensajeContacto = require('../modelos/MensajeContacto');
 const { request, response } = require('express');
 const { enviarEmail, proveedorEmail, escaparHtml, registrarErrorEmail, obtenerRemitente } = require('../helpers/email');
+const { esErrorDeDatos, detalleErrorDeDatos } = require('../helpers/errores');
 
 /**
  * Handles incoming contact messages by extracting data from the request body,
@@ -93,6 +94,9 @@ const crearMensajeContacto = async (req = request, res = response) => {
         }
 
     } catch (error) {
+        if (esErrorDeDatos(error)) {
+            return res.status(400).json({ mensaje: detalleErrorDeDatos(error) });
+        }
         console.log(error);
         return res.status(500).json({ mensaje: 'Error interno del servidor al enviar mensaje de contacto' });
     }

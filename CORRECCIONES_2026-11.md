@@ -90,3 +90,12 @@ Todos llegan a `EMAIL_TO`, enviados desde `EMAIL_FROM` (Brevo):
 2. **Trabajo completado** (`PUT /api/agendar-visita/completar/:id`): correo con observaciones y el token de confirmación. La respuesta incluye `emailEnviado` y ya no devuelve `tokenConfirmacion`. El token solo aparece en los logs si el correo no se pudo enviar, para poder recuperarlo.
 
 Además, `fechaCreacion`/`fechaActualizacion` usan `default: Date.now` (antes `new Date()`, que fijaba la fecha de arranque del servidor en todos los registros).
+
+## Correcciones menores de la revisión de código
+
+- **Validación de formularios públicos:** `validarCamposPublicos` rechaza con 400 los campos requeridos vacíos (visita: todos los de texto; contacto: `nombre`, `email`, `mensaje`). Los errores de Mongoose por datos (`ValidationError`, `CastError`, p. ej. fecha o ID inválido) responden 400 en lugar de 500 (`helpers/errores.js`).
+- **Transferencia a inventario atómica:** la visita se reserva con `findOneAndUpdate({ transferidoAInventario: false })` antes de crear el inventario; si la creación falla, se revierte. Dos clics simultáneos ya no duplican el equipo.
+- **No se puede completar de nuevo** una visita ya transferida (antes regeneraba el token).
+- **Edición de inventario y usuarios:** la búsqueda de serial/email duplicado usaba `$ne`, que `sanitizeFilter` convierte en literal y hacía fallar toda edición. Ahora se compara el `_id` en código. `usuario`, `marca`, `tipoEquipo` y `estadoEquipo` aceptan objeto poblado o ID.
+- **Imágenes:** máximo 2.5 MB por archivo (3.5 MB en Base64) para que dos imágenes quepan en el límite JSON de 8 MB. El boceto ya no ofrece PDF (el backend solo acepta PNG/JPEG/GIF/WebP).
+- **Logs:** de `MONGO_URI` solo se muestra el host, nunca usuario ni contraseña.

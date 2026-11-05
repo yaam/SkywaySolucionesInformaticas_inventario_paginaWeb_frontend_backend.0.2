@@ -5,7 +5,8 @@ const rateLimit = require('express-rate-limit');
 const DURACION_SESION = '8h';
 const LONGITUD_MINIMA_SECRETO = 32;
 const MAX_LONGITUD_TEXTO = 2000;
-const MAX_LONGITUD_IMAGEN = 7 * 1024 * 1024;
+// ~2.5 MB de archivo en Base64: dos imágenes caben en el límite JSON de 8 MB.
+const MAX_LONGITUD_IMAGEN = 3.5 * 1024 * 1024;
 const CAMPO_HONEYPOT = 'sitioWeb';
 
 const authConfigurada = () => Boolean(
@@ -82,8 +83,14 @@ const rechazarBots = (req, res, next) => {
     return next();
 };
 
-const validarCamposPublicos = (camposTexto, camposImagen = []) => (req, res, next) => {
+const validarCamposPublicos = (camposTexto, camposImagen = [], camposRequeridos = camposTexto) => (req, res, next) => {
     const body = req.body || {};
+    for (const campo of camposRequeridos) {
+        const valor = body[campo];
+        if (typeof valor !== 'string' || !valor.trim()) {
+            return res.status(400).json({ mensaje: `Campo requerido: ${campo}` });
+        }
+    }
     for (const campo of camposTexto) {
         const valor = body[campo];
         if (valor === undefined || valor === null) continue;

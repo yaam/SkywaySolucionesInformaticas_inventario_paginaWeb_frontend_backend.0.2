@@ -81,8 +81,9 @@ try{
         return res.send('Usuario no existe');
     }
 
-    const existeUsuario = await Usuario
-        .findOne({email: req.body.email, _id: {$ne: usuario._id }});
+    // sanitizeFilter bloquea operadores como $ne; se compara el _id en código.
+    const usuarioConEmail = await Usuario.findOne({email: req.body.email});
+    const existeUsuario = usuarioConEmail && !usuarioConEmail._id.equals(usuario._id) ? usuarioConEmail : null;
     
     console.log('Respuesta existe usuario', existeUsuario);
     

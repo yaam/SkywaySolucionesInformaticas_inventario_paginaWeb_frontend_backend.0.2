@@ -1,6 +1,10 @@
 const {Router} = require('express');
 const Inventario = require('../modelos/Inventario');
 const {validarInventario} = require('../helpers/validar-inventario');
+const { esErrorDeDatos, detalleErrorDeDatos } = require('../helpers/errores');
+
+// Acepta el objeto poblado ({ _id, ... }) o el ID directamente.
+const idDe = (valor) => (valor && typeof valor === 'object' ? valor._id : valor);
 
 /**
  * Listar todos
@@ -58,10 +62,10 @@ const createInventario = async (req, res) =>{
             inventario.foto = req.body.foto;
             inventario.color = req.body.color;
             inventario.precio = req.body.precio;
-            inventario.usuario = req.body.usuario._id;
-            inventario.tipoEquipo = req.body.tipoEquipo._id;
-            inventario.estadoEquipo = req.body.estadoEquipo._id;
-            inventario.marca = req.body.marca._id;
+            inventario.usuario = idDe(req.body.usuario);
+            inventario.tipoEquipo = idDe(req.body.tipoEquipo);
+            inventario.estadoEquipo = idDe(req.body.estadoEquipo);
+            inventario.marca = idDe(req.body.marca);
             inventario.fechaCompra = req.body.fechaCompra;
             // inventario.fechaCreacion =new Date(); // Manejado por el default del esquema
             // inventario.fechaActualizacion = new Date(); // Manejado por el default del esquema
@@ -81,6 +85,9 @@ const createInventario = async (req, res) =>{
             res.status(201).send(inventario); 
 
     }catch(error){
+        if (esErrorDeDatos(error)) {
+            return res.status(400).send(detalleErrorDeDatos(error));
+        }
         console.log(error);
         res.status(500).send('Ocurrio un error en el servidor');
     }
@@ -102,9 +109,9 @@ const updateInventario = async (req, res)=>{
             }
             
             //Buscame por serial pero distinto al inventario que estoy actualizando
-            const inventarioExisteSerial = await Inventario
-             .findOne({serial: req.body.serial, _id: {$ne: inventario._id}});
-            if(inventarioExisteSerial){
+            // sanitizeFilter bloquea operadores como $ne; se compara el _id en código.
+            const inventarioConSerial = await Inventario.findOne({serial: req.body.serial});
+            if(inventarioConSerial && !inventarioConSerial._id.equals(inventario._id)){
                 return res.status(400).send('El serial ya existe');
             }
             // const fechaActual = new Date(); // Eliminada
@@ -116,10 +123,10 @@ const updateInventario = async (req, res)=>{
             inventario.foto = req.body.foto;
             inventario.color = req.body.color;
             inventario.precio = req.body.precio;
-            inventario.usuario = req.body.usuario._id;
-            inventario.tipoEquipo = req.body.tipoEquipo._id;
-            inventario.estadoEquipo = req.body.estadoEquipo._id;
-            inventario.marca = req.body.marca._id;
+            inventario.usuario = idDe(req.body.usuario);
+            inventario.tipoEquipo = idDe(req.body.tipoEquipo);
+            inventario.estadoEquipo = idDe(req.body.estadoEquipo);
+            inventario.marca = idDe(req.body.marca);
             inventario.fechaCompra = req.body.fechaCompra;
             //Datos transacionales
             inventario.fechaActualizacion = new Date();
@@ -139,6 +146,9 @@ const updateInventario = async (req, res)=>{
             res.send(inventario); 
 
     }catch(error){
+        if (esErrorDeDatos(error)) {
+            return res.status(400).send(detalleErrorDeDatos(error));
+        }
         console.log(error);
         res.status(500).send('Ocurrio un error en el servidor');
     }
