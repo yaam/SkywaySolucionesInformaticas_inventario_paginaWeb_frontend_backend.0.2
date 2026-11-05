@@ -7,7 +7,7 @@ const MensajeContactoSchema = Schema({
     lineaLlamada: { type: String },
     whatsapp: { type: String },
     mensaje: { type: String, required: true },
-    fechaCreacion: { type: Date, default: new Date() }
+    fechaCreacion: { type: Date, default: Date.now }
 });
 
 module.exports = model('MensajeContacto', MensajeContactoSchema);

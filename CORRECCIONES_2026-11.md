@@ -81,3 +81,12 @@ La aplicación no usa modelos de IA, así que no hay superficie de *prompt injec
 - `nginx.conf` hace proxy de `/api`, `/usuario`, `/marca`, `/estadoEquipo`, `/uploads` y `/health` al backend: el frontend usa `REACT_APP_BASE_URL=/` (mismo origen, sin CORS) y añade cabeceras `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`.
 - `docker-compose.yml`: pasa `ADMIN_USER`, `ADMIN_PASSWORD`, `JWT_SECRET`, `ALLOWED_ORIGINS`; healthcheck en `/health`; backend publicado solo en `127.0.0.1`; MongoDB sin puerto publicado y `MONGO_ROOT_PASSWORD` obligatoria (antes `password` por defecto). Si `MONGO_URI` está vacío usa el contenedor `mongodb`.
 - Uso: `cp env.docker.example .env`, completar valores y `docker compose up -d --build`; la web queda en `http://localhost`.
+
+## Correos de visita técnica
+
+Todos llegan a `EMAIL_TO`, enviados desde `EMAIL_FROM` (Brevo):
+
+1. **Nueva visita agendada** (`POST /api/agendar-visita`): asunto `📅 Nueva visita técnica: <cliente> - <fecha> <hora>`, con cliente, contacto, dirección, servicio, equipo, fecha, hora, imágenes adjuntas y problema. La respuesta incluye `emailEnviado`. El cliente sigue viendo el enlace de WhatsApp.
+2. **Trabajo completado** (`PUT /api/agendar-visita/completar/:id`): correo con observaciones y el token de confirmación. La respuesta incluye `emailEnviado` y ya no devuelve `tokenConfirmacion`. El token solo aparece en los logs si el correo no se pudo enviar, para poder recuperarlo.
+
+Además, `fechaCreacion`/`fechaActualizacion` usan `default: Date.now` (antes `new Date()`, que fijaba la fecha de arranque del servidor en todos los registros).
