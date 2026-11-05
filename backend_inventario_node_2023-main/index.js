@@ -1,5 +1,9 @@
 const express = require('express');
 const {getConnection, getDbStatus} = require('./db/db-connection-mongo');
+// Docker Compose pasa como '' las variables no definidas; se eliminan para que dotenv cargue las del .env.
+for (const [clave, valor] of Object.entries(process.env)) {
+    if (valor === '') delete process.env[clave];
+}
 require('dotenv').config();
 const cors = require ('cors');
 const helmet = require('helmet');
