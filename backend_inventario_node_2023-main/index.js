@@ -59,13 +59,14 @@ app.use(express.json({ limit: '8mb' }));
 app.use('/uploads', express.static('uploads'));
 
 // Ruta de health check para Render
-// Responde 200 aunque la DB falle para que Render no reinicie el servicio; el estado real va en `db`
+// Responde 200 aunque la DB falle para que Render no reinicie el servicio; el estado real va en `db`.
+// El nombre de la base y el último error solo se registran en los logs (no se exponen públicamente).
 app.get('/health', (req, res) => {
-    const db = getDbStatus();
+    const { state, readyState } = getDbStatus();
     res.status(200).json({
-        status: db.state === 'connected' ? 'ok' : 'degraded',
+        status: state === 'connected' ? 'ok' : 'degraded',
         message: 'Server is running',
-        db,
+        db: { state, readyState },
     });
 });
 
