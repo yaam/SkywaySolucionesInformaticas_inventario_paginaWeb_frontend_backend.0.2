@@ -78,7 +78,7 @@ export const Contacto = () => {
                         <div className="card-body p-4">
                             <p className="text-muted mb-4">
                                 Completa el formulario y nos pondremos en contacto contigo a la brevedad. 
-                                Se enviará una notificación a <strong>yaam17@outlook.com</strong> con tus datos de contacto.
+                                Se enviará una notificación a <strong>yaam17@proton.me</strong> con tus datos de contacto.
                             </p>
 
                             <form onSubmit={handleSubmit}>
@@ -193,7 +193,7 @@ export const Contacto = () => {
                         <div className="card-body">
                             <h5 className="card-title">📞 Información de Contacto</h5>
                             <p className="card-text">
-                                <strong>Email:</strong> yaam17@outlook.com<br/>
+                                <strong>Email:</strong> yaam17@proton.me<br/>
                                 <strong>Atención:</strong> Lunes a Viernes, 8:00 AM - 6:00 PM
                             </p>
                         </div>
