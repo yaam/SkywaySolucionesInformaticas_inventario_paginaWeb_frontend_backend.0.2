@@ -238,12 +238,13 @@ Sin `ADMIN_USER`, `ADMIN_PASSWORD` y `JWT_SECRET` las rutas del panel responden 
 
 1. **Copia la URL** de tu servicio (algo como):
    ```
-   https://skywaysolucionesinformaticas-inventario.onrender.com
+   https://<TU-SERVICIO>.onrender.com
    ```
+   Usa esa URL exacta (la que muestra Render arriba del dashboard del servicio) en el resto de esta guía y en Vercel. Render la deriva del nombre del servicio: `skyway-backend` → `https://skyway-backend.onrender.com`. El servicio de producción actual es `https://skywaysolucionesinformaticas-inventario.onrender.com`.
 
 2. **Abre en el navegador:**
    ```
-   https://skywaysolucionesinformaticas-inventario.onrender.com/health
+   https://<TU-SERVICIO>.onrender.com/health
    ```
 
 3. **Deberías ver:**
@@ -264,7 +265,7 @@ Usa PowerShell para probar:
 
 ```powershell
 $body = '{"nombre":"Prueba desde Render","email":"test@test.com","telefono":"123","mensaje":"Probando emails desde producción"}';
-Invoke-RestMethod -Uri "https://skywaysolucionesinformaticas-inventario.onrender.com/api/contacto" -Method POST -Body $body -ContentType "application/json" | ConvertTo-Json
+Invoke-RestMethod -Uri "https://<TU-SERVICIO>.onrender.com/api/contacto" -Method POST -Body $body -ContentType "application/json" | ConvertTo-Json
 ```
 
 ### 7.2 Resultado Esperado
@@ -296,7 +297,7 @@ Invoke-RestMethod -Uri "https://skywaysolucionesinformaticas-inventario.onrender
 4. **Busca:** `REACT_APP_BASE_URL`
 5. **Actualiza el valor a:**
    ```
-   https://skywaysolucionesinformaticas-inventario.onrender.com
+   https://<TU-SERVICIO>.onrender.com
    ```
 6. **Guarda los cambios**
 7. **Redeployes** el frontend
@@ -308,7 +309,7 @@ Si quieres probar localmente primero:
 1. **Abre:** `frontend_inventario_react-main/src/helpers/axios-config.js`
 2. **Actualiza la baseURL:**
    ```javascript
-   const baseURL = 'https://skywaysolucionesinformaticas-inventario.onrender.com';
+   const baseURL = 'https://<TU-SERVICIO>.onrender.com';
    ```
 3. **Reinicia el frontend**
 
@@ -331,7 +332,7 @@ Si quieres probar localmente primero:
 
 ### Backend (Render)
 ```
-https://skywaysolucionesinformaticas-inventario.onrender.com
+https://<TU-SERVICIO>.onrender.com
 ```
 
 **Endpoints:**
