@@ -1,6 +1,6 @@
 const MensajeContacto = require('../modelos/MensajeContacto');
 const { request, response } = require('express');
-const { enviarEmail, escaparHtml, registrarErrorEmail, obtenerRemitente } = require('../helpers/email');
+const { enviarEmail, proveedorEmail, escaparHtml, registrarErrorEmail, obtenerRemitente } = require('../helpers/email');
 
 /**
  * Handles incoming contact messages by extracting data from the request body,
@@ -64,8 +64,8 @@ const crearMensajeContacto = async (req = request, res = response) => {
         };
 
         // Verificar credenciales antes de enviar
-        if (!process.env.SENDGRID_API_KEY) {
-            console.error('❌ ERROR: SENDGRID_API_KEY no configurada en .env');
+        if (!proveedorEmail()) {
+            console.error('❌ ERROR: configura BREVO_API_KEY o SENDGRID_API_KEY');
             return res.status(201).json({ 
                 mensaje: 'Mensaje guardado, pero correo no enviado (credenciales faltantes)', 
                 mensajeContacto 

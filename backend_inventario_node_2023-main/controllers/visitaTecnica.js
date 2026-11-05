@@ -1,7 +1,7 @@
 const VisitaTecnica = require('../modelos/VisitaTecnica');
 const { request, response } = require('express');
 const crypto = require('crypto');
-const { enviarEmail, escaparHtml, registrarErrorEmail, obtenerRemitente, obtenerDestinatario } = require('../helpers/email');
+const { enviarEmail, proveedorEmail, escaparHtml, registrarErrorEmail, obtenerRemitente, obtenerDestinatario } = require('../helpers/email');
 
 // Generar token aleatorio
 const generarToken = () => {
@@ -154,8 +154,8 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         };
 
         // Verificar credenciales antes de enviar
-        if (!process.env.SENDGRID_API_KEY) {
-            console.error('❌ ERROR: SENDGRID_API_KEY no configurada en .env');
+        if (!proveedorEmail()) {
+            console.error('❌ ERROR: configura BREVO_API_KEY o SENDGRID_API_KEY');
             console.log('═══════════════════════════════════════════════');
             console.log('🔐 TOKEN DE CONFIRMACIÓN GENERADO: ' + token);
             console.log('⚠️  El email NO se envió (credenciales faltantes)');
