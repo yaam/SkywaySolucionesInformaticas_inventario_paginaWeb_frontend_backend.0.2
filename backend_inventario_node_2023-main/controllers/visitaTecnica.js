@@ -8,6 +8,57 @@ const generarToken = () => {
     return crypto.randomBytes(3).toString('hex').toUpperCase(); // Token de 6 caracteres
 };
 
+const fila = (etiqueta, valor) =>
+    `<p style="margin: 5px 0;"><strong>${etiqueta}:</strong> ${escaparHtml(valor)}</p>`;
+
+// Avisa a EMAIL_TO que un cliente agendó una visita. Devuelve true si el correo salió.
+const notificarNuevaVisita = async (visita) => {
+    if (!proveedorEmail()) {
+        console.error('❌ ERROR: configura BREVO_API_KEY o SENDGRID_API_KEY');
+        return false;
+    }
+    const imagenes = [visita.imagenEquipo && 'foto del equipo', visita.imagenBoceto && 'boceto'].filter(Boolean);
+    try {
+        await enviarEmail({
+            subject: `📅 Nueva visita técnica: ${visita.nombre} - ${visita.fecha.toLocaleDateString('es-CO', { timeZone: 'UTC' })} ${visita.hora}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                    <h2 style="color: #0066cc; text-align: center;">📅 Nueva Visita Técnica Agendada</h2>
+                    <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h3 style="color: #0066cc; margin-top: 0;">Cliente</h3>
+                        ${fila('👤 Nombre', visita.nombre)}
+                        ${fila('📞 Contacto', visita.contacto)}
+                        ${fila('📍 Dirección', visita.direccion)}
+                    </div>
+                    <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h3 style="color: #0066cc; margin-top: 0;">Servicio</h3>
+                        ${fila('🛠️ Tipo de servicio', visita.tipoServicio)}
+                        ${fila('💻 Tipo de equipo', visita.tipoEquipo)}
+                        ${fila('📅 Fecha', visita.fecha.toLocaleDateString('es-CO', { timeZone: 'UTC' }))}
+                        ${fila('⏰ Hora', visita.hora)}
+                        ${fila('🖼️ Imágenes adjuntas en la plataforma', imagenes.length ? imagenes.join(', ') : 'ninguna')}
+                    </div>
+                    <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                        <h3 style="color: #856404; margin-top: 0;">📝 Problema reportado</h3>
+                        <p style="margin: 5px 0; white-space: pre-wrap;">${escaparHtml(visita.problema)}</p>
+                    </div>
+                    <p style="color: #333;">Gestiona la visita en la plataforma → <strong>Gestión de Visitas</strong>.</p>
+                    <p style="text-align: center; color: #666; font-size: 12px; margin-top: 30px;">
+                        Este mensaje fue generado automáticamente por Skyway Soluciones Informáticas<br>
+                        ${new Date().toLocaleString('es-CO')}
+                    </p>
+                </div>
+            `
+        });
+        console.log('✅ Notificación de nueva visita enviada a', obtenerDestinatario());
+        return true;
+    } catch (emailError) {
+        registrarErrorEmail(emailError);
+        console.log('⚠️ Visita guardada, pero el correo de notificación no se pudo enviar');
+        return false;
+    }
+};
+
 const crearVisitaTecnica = async (req = request, res = response) => {
     try {
         const { nombre, contacto, tipoServicio, tipoEquipo, problema, direccion, fecha, hora, imagenEquipo, imagenBoceto } = req.body;
@@ -26,7 +77,7 @@ const crearVisitaTecnica = async (req = request, res = response) => {
 
         await visitaTecnica.save();
 
-        // Enviar notificación a WhatsApp
+        // Mensaje para WhatsApp (el frontend abre wa.me con este texto)
         const mensajeWhatsApp = `🔔 *Nueva Visita Técnica Agendada*\n\n` +
             `👤 *Cliente:* ${nombre}\n` +
             `📞 *Contacto:* ${contacto}\n` +
@@ -37,16 +88,13 @@ const crearVisitaTecnica = async (req = request, res = response) => {
             `⏰ *Hora:* ${hora}\n` +
             `📝 *Descripción:* ${problema}`;
 
-        // URL de WhatsApp para enviar mensaje (se abre en el navegador del servidor)
-        // Nota: Para automatizar completamente, necesitarías usar la API de WhatsApp Business
-        console.log('📱 Notificación WhatsApp generada:');
-        console.log(mensajeWhatsApp);
-        console.log('Para enviar automáticamente, configure la API de WhatsApp Business');
+        const emailEnviado = await notificarNuevaVisita(visitaTecnica);
 
         return res.status(201).json({ 
             mensaje: 'Visita técnica agendada con éxito', 
             visitaTecnica: { _id: visitaTecnica._id, fecha: visitaTecnica.fecha, hora: visitaTecnica.hora },
-            whatsappMessage: mensajeWhatsApp
+            whatsappMessage: mensajeWhatsApp,
+            emailEnviado
         });
 
     } catch (error) {
@@ -123,8 +171,7 @@ const completarVisitaTecnica = async (req = request, res = response) => {
                     <div style="background-color: #fff3cd; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ffc107;">
                         <h3 style="color: #856404; margin-top: 0;">🔐 TOKEN DE CONFIRMACIÓN</h3>
                         <p style="font-size: 14px; color: #856404; margin-bottom: 10px;">
-                            Para confirmar la transferencia al inventario, responde a este correo indicando "FIN DE TAREA" 
-                            y se te proporcionará automáticamente el siguiente token:
+                            Para confirmar la transferencia al inventario, usa este token:
                         </p>
                         <div style="background-color: #fff; padding: 15px; text-align: center; border-radius: 5px; margin: 10px 0;">
                             <p style="font-size: 32px; font-weight: bold; color: #0066cc; margin: 0; letter-spacing: 5px;">${token}</p>
@@ -153,35 +200,30 @@ const completarVisitaTecnica = async (req = request, res = response) => {
             `
         };
 
-        // Verificar credenciales antes de enviar
+        let emailEnviado = false;
         if (!proveedorEmail()) {
             console.error('❌ ERROR: configura BREVO_API_KEY o SENDGRID_API_KEY');
-            console.log('═══════════════════════════════════════════════');
-            console.log('🔐 TOKEN DE CONFIRMACIÓN GENERADO: ' + token);
-            console.log('⚠️  El email NO se envió (credenciales faltantes)');
-            console.log('═══════════════════════════════════════════════');
         } else {
-            // Intentar enviar el correo
             try {
                 const info = await enviarEmail(mailOptions);
-                console.log('✅ Email enviado exitosamente a', info.to, 'con token:', token);
-                console.log('📬 ID del mensaje:', info.messageId);
-                console.log('═══════════════════════════════════════════════');
-                console.log('🔐 TOKEN DE CONFIRMACIÓN GENERADO: ' + token);
-                console.log('═══════════════════════════════════════════════');
+                emailEnviado = true;
+                console.log('✅ Token enviado a', info.to, '- ID del mensaje:', info.messageId);
             } catch (emailError) {
                 registrarErrorEmail(emailError);
-                console.log('═══════════════════════════════════════════════');
-                console.log('🔐 TOKEN DE CONFIRMACIÓN GENERADO: ' + token);
-                console.log('⚠️  El email no se envió, pero el token está disponible');
-                console.log('═══════════════════════════════════════════════');
             }
+        }
+        // Solo se registra el token si el correo no salió, para poder recuperarlo desde los logs.
+        if (!emailEnviado) {
+            console.log('⚠️  El email no se envió. TOKEN DE CONFIRMACIÓN: ' + token);
         }
 
         return res.status(200).json({ 
-            mensaje: `Visita técnica completada. Se ha enviado el token por email a ${obtenerDestinatario()}`, 
-            visitaTecnica,
-            tokenGenerado: true
+            mensaje: emailEnviado
+                ? `Visita técnica completada. Se ha enviado el token por email a ${obtenerDestinatario()}`
+                : 'Visita técnica completada, pero el correo con el token no se pudo enviar. Revisa la configuración de correo.',
+            visitaTecnica: { ...visitaTecnica.toObject(), tokenConfirmacion: undefined },
+            tokenGenerado: true,
+            emailEnviado
             // NO enviar el token al frontend por seguridad
         });
 

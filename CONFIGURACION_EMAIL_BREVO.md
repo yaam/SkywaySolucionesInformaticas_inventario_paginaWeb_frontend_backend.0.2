@@ -1,6 +1,6 @@
 # Configuración de correo con Brevo
 
-El backend envía los correos (contacto y token de visita técnica) desde `backend_inventario_node_2023-main/helpers/email.js`, usando la API HTTP de Brevo. Si `BREVO_API_KEY` está definida, se usa Brevo; si no, SendGrid (`SENDGRID_API_KEY`, ver `CONFIGURACION_EMAIL_SENDGRID.md`).
+El backend envía los correos (contacto, aviso de nueva visita técnica y token de visita completada) desde `backend_inventario_node_2023-main/helpers/email.js`, usando la API HTTP de Brevo. Si `BREVO_API_KEY` está definida, se usa Brevo; si no, SendGrid (`SENDGRID_API_KEY`, ver `CONFIGURACION_EMAIL_SENDGRID.md`).
 
 Plan gratuito: 300 correos al día y sin dominio propio (basta con un remitente verificado).
 

@@ -37,8 +37,8 @@ const VisitaTecnicaSchema = Schema({
     transferidoAInventario: { type: Boolean, default: false },
     tokenConfirmacion: { type: String, required: false }, // Token para verificar confirmación
     tokenVerificado: { type: Boolean, default: false },
-    fechaCreacion: { type: Date, default: new Date() },
-    fechaActualizacion: { type: Date, default: new Date() }
+    fechaCreacion: { type: Date, default: Date.now },
+    fechaActualizacion: { type: Date, default: Date.now }
 });
 
 module.exports = model('VisitaTecnica', VisitaTecnicaSchema);

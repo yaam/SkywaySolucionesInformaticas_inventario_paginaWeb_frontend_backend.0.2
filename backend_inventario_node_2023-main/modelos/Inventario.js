@@ -59,11 +59,11 @@ const InventarioSchema = Schema ({
     },
 	fechaCreacion: {
         type: Date,
-        default: new Date(),
+        default: Date.now,
     },
 	fechaActualizacion: {
         type: Date,
-        default: new Date(),
+        default: Date.now,
     },
     // Nuevos campos para categorizar el inventario
     tipoInventario: { type: String, required: true, enum: ['Equipo Cliente', 'Rack Telecomunicaciones', 'Proyecto Web', 'Equipo Propio'] }, // Ejemplo de categorías
