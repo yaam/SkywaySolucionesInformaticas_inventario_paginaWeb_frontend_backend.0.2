@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
 // Solo el host, para no escribir usuario ni contraseña en los logs.
-const hostDeMongoUri = (uri) => uri.replace(/^mongodb(\+srv)?:\/\//, '').split('@').pop().split(/[/?]/)[0];
+const hostDeMongoUri = (uri) => {
+    const host = uri.replace(/^mongodb(\+srv)?:\/\//, '').split(/[/?]/)[0].split('@').pop();
+    return /^[A-Za-z0-9.-]+(:\d+)?(,[A-Za-z0-9.-]+(:\d+)?)*$/.test(host) ? host : '(host no válido)';
+};
 
 const ESTADOS_DB = ['disconnected', 'connected', 'connecting', 'disconnecting'];
 const INTERVALO_LOG_ESTADO_MS = 60000;
