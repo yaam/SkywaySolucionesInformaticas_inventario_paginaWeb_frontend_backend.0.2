@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { axiosInstance } from '../helpers/axios-config';
 
+const MAX_TAMANO_ARCHIVO = 2.5 * 1024 * 1024;
+
 export const AgendarVisita = () => {
     const location = useLocation();
     const tipoServicioInicial = (location.state && location.state.tipoServicio) ? location.state.tipoServicio : '';
@@ -35,8 +37,8 @@ export const AgendarVisita = () => {
     const handleImagenEquipoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 5000000) { // 5MB
-                alert('La imagen es muy grande. Máximo 5MB');
+            if (file.size > MAX_TAMANO_ARCHIVO) {
+                alert('La imagen es muy grande. Máximo 2.5MB');
                 return;
             }
             setImagenEquipo(file);
@@ -46,8 +48,8 @@ export const AgendarVisita = () => {
     const handleImagenBocetoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 10000000) { // 10MB para PDFs
-                alert('El archivo es muy grande. Máximo 10MB');
+            if (file.size > MAX_TAMANO_ARCHIVO) {
+                alert('La imagen es muy grande. Máximo 2.5MB');
                 return;
             }
             setImagenBoceto(file);
@@ -215,7 +217,7 @@ export const AgendarVisita = () => {
                     />
                     <div className="form-text">
                         <strong>Para mantenimientos:</strong> Sube una foto clara del equipo que muestre su estado actual. 
-                        Formato: PNG o JPG. Máximo 5MB.
+                        Formato: PNG o JPG. Máximo 2.5MB.
                     </div>
                     {imagenEquipo && (
                         <div className="mt-2">
@@ -235,12 +237,12 @@ export const AgendarVisita = () => {
                         type="file" 
                         className="form-control" 
                         id="imagenBoceto" 
-                        accept="image/png, image/jpeg, image/jpg, application/pdf"
+                        accept="image/png, image/jpeg, image/jpg"
                         onChange={handleImagenBocetoChange}
                     />
                     <div className="form-text">
                         <strong>Para desarrollo web:</strong> Sube un boceto que incluya la estructura y diseño que deseas para tu página web. 
-                        Puede ser un dibujo, mockup o diseño en PDF o imagen (PNG/JPG). Máximo 10MB.
+                        Puede ser un dibujo, mockup o diseño en imagen (PNG/JPG). Máximo 2.5MB.
                     </div>
                     {imagenBoceto && (
                         <div className="mt-2">

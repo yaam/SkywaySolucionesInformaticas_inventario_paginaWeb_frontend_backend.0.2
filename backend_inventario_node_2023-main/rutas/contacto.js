@@ -7,7 +7,11 @@ const router = Router();
 router.post('/',
     limitadorFormularios,
     rechazarBots,
-    validarCamposPublicos(['nombre', 'email', 'telefono', 'lineaLlamada', 'whatsapp', 'mensaje']),
+    validarCamposPublicos(
+        ['nombre', 'email', 'telefono', 'lineaLlamada', 'whatsapp', 'mensaje'],
+        [],
+        ['nombre', 'email', 'mensaje']
+    ),
     crearMensajeContacto);
 
 module.exports = router;

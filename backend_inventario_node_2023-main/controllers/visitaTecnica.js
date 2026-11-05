@@ -2,6 +2,7 @@ const VisitaTecnica = require('../modelos/VisitaTecnica');
 const { request, response } = require('express');
 const crypto = require('crypto');
 const { enviarEmail, proveedorEmail, escaparHtml, registrarErrorEmail, obtenerRemitente, obtenerDestinatario } = require('../helpers/email');
+const { esErrorDeDatos, detalleErrorDeDatos } = require('../helpers/errores');
 
 // Generar token aleatorio
 const generarToken = () => {
@@ -98,6 +99,9 @@ const crearVisitaTecnica = async (req = request, res = response) => {
         });
 
     } catch (error) {
+        if (esErrorDeDatos(error)) {
+            return res.status(400).json({ mensaje: detalleErrorDeDatos(error) });
+        }
         console.log(error);
         return res.status(500).json({ mensaje: 'Error interno del servidor al agendar visita' });
     }
@@ -124,6 +128,10 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         
         if (!visitaTecnica) {
             return res.status(404).json({ mensaje: 'Visita técnica no encontrada' });
+        }
+
+        if (visitaTecnica.transferidoAInventario) {
+            return res.status(400).json({ mensaje: 'Esta visita ya fue transferida a inventario' });
         }
 
         // Generar token de confirmación
@@ -228,6 +236,9 @@ const completarVisitaTecnica = async (req = request, res = response) => {
         });
 
     } catch (error) {
+        if (esErrorDeDatos(error)) {
+            return res.status(400).json({ mensaje: detalleErrorDeDatos(error) });
+        }
         console.log(error);
         return res.status(500).json({ mensaje: 'Error al completar la visita técnica' });
     }
@@ -264,6 +275,9 @@ const verificarToken = async (req = request, res = response) => {
         });
 
     } catch (error) {
+        if (esErrorDeDatos(error)) {
+            return res.status(400).json({ mensaje: detalleErrorDeDatos(error) });
+        }
         console.log(error);
         return res.status(500).json({ mensaje: 'Error al verificar el token' });
     }
@@ -293,6 +307,16 @@ const transferirAInventario = async (req = request, res = response) => {
             return res.status(400).json({ mensaje: 'Esta visita ya fue transferida a inventario' });
         }
 
+        // Reserva atómica: solo una solicitud puede marcar la visita como transferida.
+        const reservada = await VisitaTecnica.findOneAndUpdate(
+            { _id: visitaTecnica._id, transferidoAInventario: false },
+            { $set: { transferidoAInventario: true, fechaActualizacion: new Date() } }
+        );
+        if (!reservada) {
+            return res.status(400).json({ mensaje: 'Esta visita ya fue transferida a inventario' });
+        }
+
+        try {
         // Crear nuevo item en inventario
         const Inventario = require('../modelos/Inventario');
         const TipoEquipo = require('../modelos/TipoEquipo');
@@ -345,18 +369,21 @@ const transferirAInventario = async (req = request, res = response) => {
 
         await nuevoInventario.save();
 
-        // Marcar como transferido
-        visitaTecnica.transferidoAInventario = true;
-        await visitaTecnica.save();
-
         console.log('✅ Visita transferida a inventario');
 
         return res.status(201).json({ 
             mensaje: 'Equipo agregado al inventario con éxito', 
             inventario: nuevoInventario 
         });
+        } catch (error) {
+            await VisitaTecnica.updateOne({ _id: visitaTecnica._id }, { $set: { transferidoAInventario: false } });
+            throw error;
+        }
 
     } catch (error) {
+        if (esErrorDeDatos(error)) {
+            return res.status(400).json({ mensaje: detalleErrorDeDatos(error) });
+        }
         console.log(error);
         return res.status(500).json({ mensaje: 'Error al transferir a inventario' });
     }

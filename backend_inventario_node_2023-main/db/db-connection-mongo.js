@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+// Solo el host, para no escribir usuario ni contraseña en los logs.
+const hostDeMongoUri = (uri) => {
+    const host = uri.replace(/^mongodb(\+srv)?:\/\//, '').split(/[/?]/)[0].split('@').pop();
+    return /^[A-Za-z0-9.-]+(:\d+)?(,[A-Za-z0-9.-]+(:\d+)?)*$/.test(host) ? host : '(host no válido)';
+};
+
 const ESTADOS_DB = ['disconnected', 'connected', 'connecting', 'disconnecting'];
 const INTERVALO_LOG_ESTADO_MS = 60000;
 let ultimoErrorDb = null;
@@ -50,13 +56,13 @@ const getConnection = async () =>{
         
         // Verificar que comience correctamente
         if (!mongoUri.startsWith('mongodb://') && !mongoUri.startsWith('mongodb+srv://')) {
-            console.error('❌ URI inválido. Recibido:', mongoUri.substring(0, 50) + '...');
+            console.error('❌ URI inválido: debe comenzar con mongodb:// o mongodb+srv://');
             throw new Error('MONGO_URI debe comenzar con "mongodb://" o "mongodb+srv://"');
         }
         
         console.log('✅ MONGO_URI limpio y válido');
         console.log('📊 Longitud:', mongoUri.length, 'caracteres');
-        console.log('🔗 Comienza con:', mongoUri.substring(0, 20) + '...');
+        console.log('🔗 Host:', hostDeMongoUri(mongoUri));
         
         await mongoose.connect(mongoUri);
         
@@ -87,4 +93,5 @@ const getConnection = async () =>{
 module.exports = {
     getConnection,
     getDbStatus,
+    hostDeMongoUri,
 }
