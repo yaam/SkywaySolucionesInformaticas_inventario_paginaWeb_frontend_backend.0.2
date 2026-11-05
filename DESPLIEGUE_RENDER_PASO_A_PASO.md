@@ -4,8 +4,7 @@
 
 Desplegar el backend en Render para que los correos funcionen correctamente en producción.
 
-**Problema en local:** Tu ISP bloquea las conexiones SMTP  
-**Solución:** Render NO tiene este problema ✅
+Los correos se envían con la API HTTP de **SendGrid** (`@sendgrid/mail`), no por SMTP, así que funcionan igual en local, Docker y Render. Ver `CONFIGURACION_EMAIL_SENDGRID.md`.
 
 ---
 
@@ -17,7 +16,7 @@ Antes de comenzar, asegúrate de tener:
 - ✅ Repositorio en GitHub con tu código
 - ✅ Cuenta de Render (gratis: https://render.com)
 - ✅ Cuenta de MongoDB Atlas configurada
-- ✅ Contraseña de aplicación de Outlook: `<CONTRASEÑA_DE_APLICACION>`
+- ✅ Cuenta de SendGrid con una API key (`SG.…`, permiso *Mail Send*) y un remitente verificado (Settings → Sender Authentication)
 
 ---
 
@@ -40,7 +39,7 @@ Antes de comenzar, asegúrate de tener:
 2. **Click en:** **"Connect your application"**
 3. **Copia el connection string:** 
    ```
-   mongodb+srv://User_mongoDB_user:Password_MongoDB@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+   mongodb+srv://<usuario>:<password>@<cluster>.<id>.mongodb.net/<base>?retryWrites=true&w=majority
    ```
 4. **Guárdalo** para el siguiente paso
 
@@ -166,44 +165,49 @@ Value: 4001
 ### Variable 3: MONGO_URI
 ```
 Key:   MONGO_URI
-Value: mongodb+srv://User_mongoDB_user:Password_MongoDB@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+Value: mongodb+srv://<usuario>:<password>@<cluster>.<id>.mongodb.net/<base>?retryWrites=true&w=majority
 ```
-**⚠️ IMPORTANTE:** Copia EXACTAMENTE el connection string de MongoDB Atlas  
+**⚠️ IMPORTANTE:** Copia el connection string desde Atlas → Connect → Drivers. El host debe ser el del cluster (p. ej. `cluster0.xxxxx.mongodb.net`), no uno que empiece con `ac-`. Si omites `<base>`, Mongo usa la base `test`.  
 **Click:** "Add Environment Variable"
 
-### Variable 4: EMAIL_USER
+### Variable 4: SENDGRID_API_KEY
 ```
-Key:   EMAIL_USER
-Value: yaam17@outlook.com
+Key:   SENDGRID_API_KEY
+Value: SG.xxxxxxxx
 ```
+**⚠️ IMPORTANTE:** Obligatoria para enviar correos. Sin ella los formularios se guardan pero no se envía ningún correo.  
 **Click:** "Add Environment Variable"
 
-### Variable 5: EMAIL_PASS
-```
-Key:   EMAIL_PASS
-Value: <CONTRASEÑA_DE_APLICACION>
-```
-**⚠️ IMPORTANTE:** Esta es tu contraseña de aplicación de Outlook  
-**Click:** "Add Environment Variable"
-
-### Variable 6: EMAIL_FROM
+### Variable 5: EMAIL_FROM
 ```
 Key:   EMAIL_FROM
-Value: yaam17@outlook.com
+Value: <remitente verificado en SendGrid>
 ```
-**Click:** "Add Environment Variable"
+Si falta, se usa `EMAIL_USER`. Debe estar verificado en SendGrid o el envío se rechaza.
+
+### Variable 6: EMAIL_TO
+```
+Key:   EMAIL_TO
+Value: <correo que recibe las notificaciones>
+```
+
+### Variables 7-10: acceso administrador y CORS
+```
+ADMIN_USER       usuario del panel
+ADMIN_PASSWORD   contraseña del panel
+JWT_SECRET       texto aleatorio de 32+ caracteres (botón "Generate")
+ALLOWED_ORIGINS  https://skyway-soluciones-informaticas-inve.vercel.app
+```
+Sin `ADMIN_USER`, `ADMIN_PASSWORD` y `JWT_SECRET` las rutas del panel responden 503.
 
 ---
 
 ## ✅ PASO 5: Crear el Servicio
 
-1. **Verifica que tengas las 6 variables configuradas:**
-   - NODE_ENV
-   - PORT
-   - MONGO_URI
-   - EMAIL_USER
-   - EMAIL_PASS
-   - EMAIL_FROM
+1. **Verifica que tengas las variables configuradas:**
+   - NODE_ENV, PORT, MONGO_URI
+   - SENDGRID_API_KEY, EMAIL_FROM, EMAIL_TO
+   - ADMIN_USER, ADMIN_PASSWORD, JWT_SECRET, ALLOWED_ORIGINS
 
 2. **Scroll hacia arriba**
 
@@ -234,12 +238,13 @@ Value: yaam17@outlook.com
 
 1. **Copia la URL** de tu servicio (algo como):
    ```
-   https://skyway-backend.onrender.com
+   https://<TU-SERVICIO>.onrender.com
    ```
+   Usa esa URL exacta (la que muestra Render arriba del dashboard del servicio) en el resto de esta guía y en Vercel. Render la deriva del nombre del servicio: `skyway-backend` → `https://skyway-backend.onrender.com`. El servicio de producción actual es `https://skywaysolucionesinformaticas-inventario.onrender.com`.
 
 2. **Abre en el navegador:**
    ```
-   https://skyway-backend.onrender.com/health
+   https://<TU-SERVICIO>.onrender.com/health
    ```
 
 3. **Deberías ver:**
@@ -260,7 +265,7 @@ Usa PowerShell para probar:
 
 ```powershell
 $body = '{"nombre":"Prueba desde Render","email":"test@test.com","telefono":"123","mensaje":"Probando emails desde producción"}';
-Invoke-RestMethod -Uri "https://skyway-backend.onrender.com/api/contacto" -Method POST -Body $body -ContentType "application/json" | ConvertTo-Json
+Invoke-RestMethod -Uri "https://<TU-SERVICIO>.onrender.com/api/contacto" -Method POST -Body $body -ContentType "application/json" | ConvertTo-Json
 ```
 
 ### 7.2 Resultado Esperado
@@ -275,9 +280,9 @@ Invoke-RestMethod -Uri "https://skyway-backend.onrender.com/api/contacto" -Metho
 
 ### 7.3 Verificar el Email
 
-1. **Abre:** https://outlook.live.com
-2. **Inicia sesión** con: `yaam17@outlook.com`
-3. **Deberías recibir** el email en **5-10 segundos** ⚡
+1. **Abre la bandeja** del correo configurado en `EMAIL_TO`
+2. **Deberías recibir** el email en pocos segundos
+3. Si no llega, revisa SendGrid → Activity Feed
 4. **Asunto:** 🔔 Nuevo Cliente Solicita Contacto - Skyway Soluciones Informáticas
 
 ---
@@ -292,7 +297,7 @@ Invoke-RestMethod -Uri "https://skyway-backend.onrender.com/api/contacto" -Metho
 4. **Busca:** `REACT_APP_BASE_URL`
 5. **Actualiza el valor a:**
    ```
-   https://skyway-backend.onrender.com
+   https://<TU-SERVICIO>.onrender.com
    ```
 6. **Guarda los cambios**
 7. **Redeployes** el frontend
@@ -304,7 +309,7 @@ Si quieres probar localmente primero:
 1. **Abre:** `frontend_inventario_react-main/src/helpers/axios-config.js`
 2. **Actualiza la baseURL:**
    ```javascript
-   const baseURL = 'https://skyway-backend.onrender.com';
+   const baseURL = 'https://<TU-SERVICIO>.onrender.com';
    ```
 3. **Reinicia el frontend**
 
@@ -327,7 +332,7 @@ Si quieres probar localmente primero:
 
 ### Backend (Render)
 ```
-https://skyway-backend.onrender.com
+https://<TU-SERVICIO>.onrender.com
 ```
 
 **Endpoints:**
@@ -367,9 +372,9 @@ https://cloud.mongodb.com
 ### Los correos siguen sin enviarse
 
 **Solución:**
-1. Verifica que EMAIL_PASS sea: `<CONTRASEÑA_DE_APLICACION>`
-2. Revisa los logs para ver el error exacto
-3. Asegúrate de que la contraseña de aplicación sea válida
+1. Verifica que `SENDGRID_API_KEY` exista y empiece con `SG.`
+2. Verifica que `EMAIL_FROM` esté verificado en SendGrid (Sender Authentication)
+3. Revisa los logs de Render y SendGrid → Activity Feed para ver el error exacto
 
 ### El backend se "duerme" después de 15 minutos
 
@@ -415,7 +420,7 @@ Si tienes problemas:
 **Backend:** Render (Node.js + Express)  
 **Frontend:** Vercel (React)  
 **Base de Datos:** MongoDB Atlas  
-**Email:** Outlook con contraseña de aplicación
+**Email:** SendGrid (API HTTP)
 
 ---
 

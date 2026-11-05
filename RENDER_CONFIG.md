@@ -25,7 +25,7 @@ Click en **"Add Environment Variable"** y agrega una por una:
 #### Variable 1: MONGO_URI
 ```
 Key: MONGO_URI
-Value: mongodb+srv://<USUARIO>:<PASSWORD>@ac-mxqbnkm.2f0zz9u.mongodb.net/inventarios?retryWrites=true&w=majority&appName=Skyway-Soluciones-Informaticas
+Value: mongodb+srv://<USUARIO>:<PASSWORD>@<cluster>.<id>.mongodb.net/<base>?retryWrites=true&w=majority
 ```
 
 #### Variable 2: PORT
@@ -40,22 +40,30 @@ Key: NODE_ENV
 Value: production
 ```
 
-#### Variable 4: EMAIL_USER
+#### Variable 4: SENDGRID_API_KEY
 ```
-Key: EMAIL_USER
-Value: yaam17@outlook.com
-```
-
-#### Variable 5: EMAIL_PASS
-```
-Key: EMAIL_PASS
-Value: tu_contraseña_de_aplicacion_outlook
+Key: SENDGRID_API_KEY
+Value: SG.xxxxxxxx
 ```
 
-#### Variable 6: EMAIL_FROM
+#### Variable 5: EMAIL_FROM
 ```
 Key: EMAIL_FROM
-Value: yaam17@outlook.com
+Value: <remitente verificado en SendGrid>
+```
+
+#### Variable 6: EMAIL_TO
+```
+Key: EMAIL_TO
+Value: <correo que recibe las notificaciones>
+```
+
+#### Variables 7-10: panel administrador y CORS
+```
+ADMIN_USER       usuario del panel
+ADMIN_PASSWORD   contraseña del panel
+JWT_SECRET       texto aleatorio de 32+ caracteres
+ALLOWED_ORIGINS  https://skyway-soluciones-informaticas-inve.vercel.app
 ```
 
 ### Paso 4: Guardar y Redesplegar
@@ -73,9 +81,12 @@ Asegúrate de tener **TODAS** estas variables configuradas:
 - [ ] `MONGO_URI` - Connection string de MongoDB Atlas
 - [ ] `PORT` - Puerto del servidor (4001)
 - [ ] `NODE_ENV` - Entorno (production)
-- [ ] `EMAIL_USER` - Tu email de Outlook
-- [ ] `EMAIL_PASS` - Contraseña de aplicación de Outlook
-- [ ] `EMAIL_FROM` - Email para envíos (mismo que EMAIL_USER)
+- [ ] `SENDGRID_API_KEY` - API key de SendGrid (`SG.…`, permiso Mail Send)
+- [ ] `EMAIL_FROM` - Remitente verificado en SendGrid (si falta se usa `EMAIL_USER`)
+- [ ] `EMAIL_TO` - Destinatario de las notificaciones
+- [ ] `ADMIN_USER`, `ADMIN_PASSWORD` - Acceso al panel
+- [ ] `JWT_SECRET` - 32+ caracteres (sin él el panel responde 503)
+- [ ] `ALLOWED_ORIGINS` - Dominio del frontend en Vercel
 
 ---
 
@@ -105,14 +116,16 @@ Asegúrate de tener **TODAS** estas variables configuradas:
 En el dashboard de Render, deberías ver algo así:
 
 ```
-Environment Variables (6)
-
-MONGO_URI          mongodb+srv://<USUARIO>...    [Edit] [Delete]
+MONGO_URI          mongodb+srv://<USUARIO>...  [Edit] [Delete]
 PORT               4001                        [Edit] [Delete]
 NODE_ENV           production                  [Edit] [Delete]
-EMAIL_USER         yaam17@outlook.com          [Edit] [Delete]
-EMAIL_PASS         ****************            [Edit] [Delete]
-EMAIL_FROM         yaam17@outlook.com          [Edit] [Delete]
+SENDGRID_API_KEY   ****************            [Edit] [Delete]
+EMAIL_FROM         <remitente verificado>      [Edit] [Delete]
+EMAIL_TO           <destinatario>              [Edit] [Delete]
+ADMIN_USER         ****************            [Edit] [Delete]
+ADMIN_PASSWORD     ****************            [Edit] [Delete]
+JWT_SECRET         ****************            [Edit] [Delete]
+ALLOWED_ORIGINS    https://skyway-...vercel.app [Edit] [Delete]
 ```
 
 ---
