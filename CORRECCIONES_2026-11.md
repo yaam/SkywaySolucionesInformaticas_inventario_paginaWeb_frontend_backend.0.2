@@ -98,4 +98,4 @@ Además, `fechaCreacion`/`fechaActualizacion` usan `default: Date.now` (antes `n
 - **No se puede completar de nuevo** una visita ya transferida (antes regeneraba el token).
 - **Edición de inventario y usuarios:** la búsqueda de serial/email duplicado usaba `$ne`, que `sanitizeFilter` convierte en literal y hacía fallar toda edición. Ahora se compara el `_id` en código. `usuario`, `marca`, `tipoEquipo` y `estadoEquipo` aceptan objeto poblado o ID.
 - **Imágenes:** máximo 2.5 MB por archivo (3.5 MB en Base64) para que dos imágenes quepan en el límite JSON de 8 MB. El boceto ya no ofrece PDF (el backend solo acepta PNG/JPEG/GIF/WebP).
-- **Logs:** de `MONGO_URI` solo se muestra el host, nunca usuario ni contraseña.
+- **Logs:** de `MONGO_URI` solo se registra que está configurada y su longitud; ninguna parte del valor (ni host, ni usuario, ni contraseña).

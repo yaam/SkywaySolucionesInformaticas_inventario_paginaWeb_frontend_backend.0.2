@@ -1,5 +1,5 @@
 const express = require('express');
-const {getConnection, getDbStatus, hostDeMongoUri} = require('./db/db-connection-mongo');
+const {getConnection, getDbStatus} = require('./db/db-connection-mongo');
 // Docker Compose pasa como '' las variables no definidas; se eliminan para que dotenv cargue las del .env.
 for (const [clave, valor] of Object.entries(process.env)) {
     if (valor === '') delete process.env[clave];
@@ -29,7 +29,6 @@ if (process.env.MONGO_URI) {
     
     console.log('✅ MONGO_URI configurada correctamente');
     console.log('🔗 Longitud:', mongoUri.length, 'caracteres');
-    console.log('🔗 Host:', hostDeMongoUri(mongoUri));
 } else {
     console.error('❌ Error: MONGO_URI no está configurada');
     console.error('📝 En Render: Ve a Dashboard → Environment → Add Environment Variable');
